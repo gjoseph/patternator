@@ -1,11 +1,17 @@
 {
   "extends": "./node_modules/gts/tsconfig-google.json",
   "compilerOptions": {
+    "declaration": true,
     "lib": ["es2019", "dom"],
-    "target": "es2019",
+    "target": "es6",
+    "module": "es6",
+    "moduleResolution": "Node",
+    "removeComments": true,
+    "sourceMap": true,
+    "strict": true,
     "rootDir": "src",
     "baseUrl": ".",
-    "outDir": "dist"
+    "outDir": "./dist"
   },
   "include": ["src/**/*.ts", "test/**/*.ts"],
   "exclude": ["node_modules"]

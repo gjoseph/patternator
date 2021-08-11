@@ -1,4 +1,4 @@
-import Snap = require("snapsvg");
+import * as Snap from "snapsvg";
 
 const MAX_X=6000;
 const MAX_Y=6000;
