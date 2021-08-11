@@ -1,4 +1,6 @@
 import Snap from "snapsvg";
+import { Coords, Patterns } from "./patterns";
+import startAt = Patterns.startAt;
 
 const MAX_X = 6000;
 const MAX_Y = 6000;
@@ -10,76 +12,6 @@ s.attr({
   _stroke: "#955",
   strokeWidth: 3
 });
-
-interface Coords {
-  x: number,
-  y: number
-}
-
-interface OptCoords {
-  x?: number,
-  y?: number
-}
-
-class Initial {
-  constructor(readonly coords: Coords) {
-  }
-
-  // TODO split out builder/factories from logic/business methods?
-  transposeBy(transposition: OptCoords): Transposition {
-    return new Transposition(this, transposition);
-  }
-}
-
-class Transposition { // implements Move
-  constructor(readonly initial: Initial, readonly transposition: OptCoords) {
-  }
-
-  // TODO split out builder/factories from logic/business methods?
-  times(count: number) {
-    return new Repetition(this, count);
-  }
-
-  // supply next coordinates to Repetition
-  from(coords: Coords): Coords {
-    return {
-      x: coords.x + (this.transposition.x || 0),
-      y: coords.y + (this.transposition.y || 0)
-    };
-  }
-}
-
-class Repetition {
-  private readonly initial: Initial;
-
-  constructor(readonly move: Transposition, readonly repeats?: number) {
-    this.initial = move.initial;
-  }
-
-  do(fun: (coords: Coords) => void) {
-    let coords = this.initial.coords;
-    // TODO if repeat <1, repeat until out of screen
-    for (let i = 0; i < (this.repeats||0); i++) {
-      console.log("coords:", coords);
-      fun(coords);
-      coords = this.move.from(coords);
-    }
-  }
-
-  /**
-   * Similar to do, but returns the results of `fun` for further processing
-   */
-  map<T>(fun: (coords: Coords) => T) {
-    // TODO
-    const coords1 = this.move.initial.coords;
-    return fun(coords1);
-  }
-}
-
-const start = () => startAt(0, 0);
-const startAt = (x: number, y: number) => {
-  return new Initial({ x, y });
-};
 
 const lines = (px: number, py: number, dx: number = px) => {
   // Multiply by MAX_* == magic number to ensure we cross the boundary of the canvas -- which is really ensuring nothing if we don't do the math here
