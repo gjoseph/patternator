@@ -9,6 +9,7 @@
     "removeComments": true,
     "sourceMap": true,
     "strict": true,
+    "allowSyntheticDefaultImports": true,
     "rootDir": "src",
     "baseUrl": ".",
     "outDir": "./dist"
