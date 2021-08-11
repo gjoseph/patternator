@@ -12,7 +12,7 @@
     "prepare": "npm run build",
     "build": "npm run bundle && npm test # && npm run gts-check",
     "bundle": "rollup src/index.ts --sourcemap --plugin typescript --plugin node-resolve --plugin commonjs --file dist/index.mjs --format esm",
-    "watch": "tsc --watch",
+    "watch": "rollup src/index.ts --watch --sourcemap --plugin typescript --plugin node-resolve --plugin commonjs --file dist/index.mjs --format esm",
     "test": "jest",
     "gts-check": "gts check",
     "gts-clean": "gts clean",
