@@ -12,7 +12,7 @@
     "prepare": "npm run build",
     "build": "npm run build-ts && npm test && npm run bundle # && npm run gts-check",
     "build-ts": "tsc -p .",
-    "bundle": "rollup dist/index.js --plugin node-resolve --file dist/index.mjs --format esm",
+    "bundle": "rollup dist/index.js --plugin node-resolve --plugin commonjs --file dist/index.mjs --format esm",
     "watch": "tsc --watch",
     "test": "jest",
     "gts-check": "gts check",
@@ -27,6 +27,7 @@
     "snapsvg": "0.5.1"
   },
   "devDependencies": {
+    "@rollup/plugin-commonjs": "20.0.0",
     "@rollup/plugin-node-resolve": "13.0.4",
     "@types/jest": "26.0.24",
     "@types/snapsvg": "0.5.1",
