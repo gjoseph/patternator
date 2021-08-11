@@ -14,6 +14,7 @@
     "bundle": "rollup src/index.ts --sourcemap --plugin typescript --plugin node-resolve --plugin commonjs --file dist/index.mjs --format esm",
     "watch": "rollup src/index.ts --watch --sourcemap --plugin typescript --plugin node-resolve --plugin commonjs --file dist/index.mjs --format esm",
     "test": "jest",
+    "test-watch": "jest --watch",
     "gts-check": "gts check",
     "gts-clean": "gts clean",
     "gts-fix": "gts fix",
