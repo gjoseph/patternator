@@ -1,3 +1,5 @@
+import { Producer } from "./producers";
+
 export interface Coords {
   x: number,
   y: number
@@ -8,10 +10,46 @@ interface OptCoords {
   y?: number
 }
 
+interface NumberOrFunctionCoords {
+  x: NumberOrFunction,
+  y: NumberOrFunction,
+}
+
+interface NumberOrFunctionOptCoords {
+  x?: NumberOrFunction,
+  y?: NumberOrFunction,
+}
+
+// TODO most `number` arguments can be replaced by a NumberOrProvider
+type NumberOrFunction = number | Producer<number>
+const toNumber = (nof: NumberOrFunction): number => {
+  if (typeof nof === "number") {
+    return nof;
+  } else {
+    return nof.next();
+  }
+};
+
+const unwrap = (nofCoords: NumberOrFunctionCoords): Coords => {
+  return { x: toNumber(nofCoords.x), y: toNumber(nofCoords.y) };
+};
+
+const unwrapOpt = (nofOptCoords: NumberOrFunctionOptCoords): Coords => {
+  return { x: toNumber(nofOptCoords.x || 0), y: toNumber(nofOptCoords.y || 0) };
+};
+
+const addCoords = (a: Coords, b: Coords): Coords => {
+  return { x: a.x + b.x, y: a.y + b.y };
+};
+
 export namespace Patterns {
-  export const start = () => startAt(0, 0);
-  export const startAt = (x: number, y: number) => {
-    return new Initial({ x, y });
+  export const center = () => {
+    throw Error("not implemented yet");
+  }; // TODO
+
+  export const start = () => startAt({ x: 0, y: 0 });
+  export const startAt = (coords: NumberOrFunctionCoords) => {
+    return new Initial(unwrap(coords));
   };
 
   export class Initial {
@@ -19,7 +57,7 @@ export namespace Patterns {
     }
 
     // TODO split out builder/factories from logic/business methods?
-    transposeBy(transposition: OptCoords): Transposition {
+    transposeBy(transposition: NumberOrFunctionOptCoords): Transposition {
       return new Transposition(this, transposition);
     }
 
@@ -87,7 +125,7 @@ export namespace Patterns {
     private repeats: number = 0; // builder
     private currentIdx = 0; // state
     private currentCoords: Coords | undefined = undefined; // state
-    constructor(initial: Initial, readonly transposition: OptCoords) {
+    constructor(initial: Initial, readonly transposition: NumberOrFunctionOptCoords) {
       super(initial);
     }
 
@@ -109,10 +147,7 @@ export namespace Patterns {
       if (!this.currentCoords) {
         this.currentCoords = this.initial.coords;
       } else {
-        this.currentCoords = {
-          x: this.currentCoords.x + (this.transposition.x || 0),
-          y: this.currentCoords.y + (this.transposition.y || 0)
-        };
+        this.currentCoords = addCoords(this.currentCoords, unwrapOpt(this.transposition));
       }
       this.currentIdx++;
       return this.currentCoords;
