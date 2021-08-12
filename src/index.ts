@@ -1,6 +1,10 @@
 import Snap from "snapsvg";
 import { Coords, Patterns } from "./patterns";
+import { Producers } from "./producers";
 import startAt = Patterns.startAt;
+import dec = Producers.dec;
+import inc = Producers.inc;
+import rnd = Producers.rnd;
 
 const MAX_X = 6000;
 const MAX_Y = 6000;
@@ -55,10 +59,17 @@ s.rect(0, 0, MAX_X, MAX_Y);
 
 grid(120, 72, 0, 60);
 grid(120, 72, 60, 24);
-startAt(50, 50).transposeBy({ x: 50,y:20 }).times(5).do((coords: Coords) => {
+
+function drawCircle(coords: Coords) {
   s.circle(coords.x, coords.y, 10).attr({
-    fill: "#559",
-    stroke: "#955",
-    strokeWidth: 5
+    fill: "#99c",
+    stroke: "#933",
+    strokeWidth: 2
   });
-});
+}
+
+startAt({ x: 50, y: 50 }).transposeBy({ x: 50, y: 20 }).times(15).do(drawCircle);
+
+startAt({ x: rnd(200), y: rnd(200) }).transposeBy({ x: inc(3), y: dec(10) }).times(7).do(drawCircle);
+
+// startAt(5, 65).transposeBy()
