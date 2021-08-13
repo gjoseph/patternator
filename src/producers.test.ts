@@ -45,6 +45,15 @@ describe("Generates number values", () => {
   it("increment happily starts in negative", () => {
     expect(peek(10, inc(-3))).toEqual([-3, -2, -1, 0, 1, 2, 3, 4, 5, 6]);
   });
+  it("increment in steps", () => {
+    expect(peek(10, inc(3, 2))).toEqual([3, 5, 7, 9, 11, 13, 15, 17, 19, 21]);
+  });
+  it("increment in steps happily starts in negative", () => {
+    expect(peek(10, inc(-7, 4))).toEqual([-7, -3, 1, 5, 9, 13, 17, 21, 25, 29]);
+  });
+  it("increment step can be negative because why not", () => {
+    expect(peek(10, inc(3, -1))).toEqual([3, 2, 1, 0, -1, -2, -3, -4, -5, -6]);
+  });
   it("decrement", () => {
     expect(peek(10, dec(15))).toEqual([15, 14, 13, 12, 11, 10, 9, 8, 7, 6]);
   });

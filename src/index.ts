@@ -60,6 +60,15 @@ s.rect(0, 0, MAX_X, MAX_Y);
 grid(120, 72, 0, 60);
 grid(120, 72, 60, 24);
 
+function dot(coords: Coords) {
+  console.log("dot -- coords:", coords);
+  s.circle(coords.x, coords.y, 2).attr({
+    fill: "#444",
+    stroke: "#333",
+    strokeWidth: 1
+  });
+}
+
 function drawCircle(coords: Coords) {
   s.circle(coords.x, coords.y, 10).attr({
     fill: "#99c",
@@ -70,6 +79,16 @@ function drawCircle(coords: Coords) {
 
 startAt({ x: 50, y: 50 }).transposeBy({ x: 50, y: 20 }).times(15).do(drawCircle);
 
-startAt({ x: rnd(200), y: rnd(200) }).transposeBy({ x: inc(3), y: dec(10) }).times(7).do(drawCircle);
+startAt({ x: rnd(200), y: rnd(200) })
+  .transposeBy({ x: inc(3), y: dec(10) })
+  .times(7)
+  .do(drawCircle);
 
-// startAt(5, 65).transposeBy()
+// transposes, grids, polygons etc, can just be Producer<Coord> implementations and map to do()
+// ... so we need some producers that _end_, or do we just keep using times()
+// onGrid with times() makes no sense, since the grid has a finite nr of points, so times() should only be available
+// on unbounded generators
+startAt({ x: 5, y: 0 })
+  .onGrid(20, 20, 120, 72)
+  .times(50)
+  .do(dot);

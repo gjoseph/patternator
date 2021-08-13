@@ -1,4 +1,7 @@
-import { Producer } from "./producers";
+import { Producer, Producers } from "./producers";
+
+// TODO most `number` arguments can be replaced by a NumberOrProducer
+type NumberOrFunction = number | Producer<number>
 
 export interface Coords {
   x: number,
@@ -10,18 +13,16 @@ interface OptCoords {
   y?: number
 }
 
-interface NumberOrFunctionCoords {
+interface NumberOrFunctionCoords { // TODO what about Coords|Producer<Coords> ?
   x: NumberOrFunction,
   y: NumberOrFunction,
 }
 
-interface NumberOrFunctionOptCoords {
+export interface NumberOrFunctionOptCoords {
   x?: NumberOrFunction,
   y?: NumberOrFunction,
 }
 
-// TODO most `number` arguments can be replaced by a NumberOrProvider
-type NumberOrFunction = number | Producer<number>
 const toNumber = (nof: NumberOrFunction): number => {
   if (typeof nof === "number") {
     return nof;
@@ -34,15 +35,16 @@ const unwrap = (nofCoords: NumberOrFunctionCoords): Coords => {
   return { x: toNumber(nofCoords.x), y: toNumber(nofCoords.y) };
 };
 
-const unwrapOpt = (nofOptCoords: NumberOrFunctionOptCoords): Coords => {
+export const unwrapOpt = (nofOptCoords: NumberOrFunctionOptCoords): Coords => {
   return { x: toNumber(nofOptCoords.x || 0), y: toNumber(nofOptCoords.y || 0) };
 };
 
-const addCoords = (a: Coords, b: Coords): Coords => {
-  return { x: a.x + b.x, y: a.y + b.y };
+export const addCoords = (a: Coords, b: OptCoords): Coords => {
+  return { x: a.x + (b.x || 0), y: a.y + (b.y || 0) };
 };
 
 export namespace Patterns {
+
   export const center = () => {
     throw Error("not implemented yet");
   }; // TODO
@@ -57,8 +59,8 @@ export namespace Patterns {
     }
 
     // TODO split out builder/factories from logic/business methods?
-    transposeBy(transposition: NumberOrFunctionOptCoords): Transposition {
-      return new Transposition(this, transposition);
+    transposeBy(transposition: NumberOrFunctionOptCoords): FixedLengthRepetition {
+      return new FixedLengthRepetition(Producers.transpose(this.coords, transposition));
     }
 
     onGrid(horizontalItems: number, verticalItems: number, gridSpacing: number, gridSpacingY?: number) {
@@ -90,21 +92,12 @@ export namespace Patterns {
   }
 
   abstract class Repetition {
-    constructor(readonly initial: Initial) {
-    }
+    abstract hasMore(): boolean;
 
-    // supply next coordinates to Repetition
-    // TODO instead keep state here and have peek() and poll()
-    // abstract from(coords: Coords): Coords ;
-    abstract hasMore(): boolean ;
-
-    abstract poll(): Coords ;
-
-    do(fun: (coords: Coords) => void): void {
-      this.map(fun);
-    }
+    abstract poll(): Coords;
 
     /**
+     * Executes the given function over each generated coordinates.
      * Similar to do, but returns the results of `fun` for further processing
      */
     map<T>(fun: (coords: Coords) => T) {
@@ -112,21 +105,21 @@ export namespace Patterns {
       while (this.hasMore()) {
         coords.push(this.poll());
       }
-      // let coords = [this.initial.coords];
-      // // TODO if repeat <1, repeat until out of screen
-      // for (let i = 1; i < (this.repeats || 0); i++) {
-      //   coords.push(this.from(coords[i - 1]));
-      // }
       return coords.map(fun);
     }
+
+    /**
+     * A more human-friendly name for map(); does not return the results of `fun`.
+     */
+    do = this.map;
   }
 
-  class Transposition extends Repetition {
-    private repeats: number = 0; // builder
+  class FixedLengthRepetition extends Repetition {
+    private repeats: number = 1; // builder
     private currentIdx = 0; // state
-    private currentCoords: Coords | undefined = undefined; // state
-    constructor(initial: Initial, readonly transposition: NumberOrFunctionOptCoords) {
-      super(initial);
+    protected currentCoords: Coords | undefined = undefined; // state
+    constructor(readonly coordsProducer: Producer<Coords>) {
+      super();
     }
 
     // TODO split out builder/factories from logic/business methods?
@@ -144,38 +137,25 @@ export namespace Patterns {
     }
 
     poll(): Coords {
-      if (!this.currentCoords) {
-        this.currentCoords = this.initial.coords;
-      } else {
-        this.currentCoords = addCoords(this.currentCoords, unwrapOpt(this.transposition));
-      }
+      this.currentCoords = this.nextCoords();
       this.currentIdx++;
       return this.currentCoords;
     }
 
-    // let coords = [this.initial.coords];
-    // // TODO if repeat <1, repeat until out of screen
-    // for (let i = 1; i < (this.repeats || 0); i++) {
-    //   coords.push(this.from(coords[i - 1]));
-    // }
+    protected nextCoords() {
+      return this.coordsProducer.next();
+    }
+
   }
 
-  class Grid extends Repetition {
-    constructor(initial: Initial, readonly horizontalItems: number, readonly verticalItems: number, readonly gridSpacingX: number, readonly gridSpacingY: number) {
-      super(initial);
-    }
-
-    from(coords: Coords): Coords {
-      return { x: 0, y: 0 };
-    }
-
-    hasMore(): boolean {
-      return false;
-    }
-
-    poll(): Coords {
-      return { x: 0, y: 0 };
+  class Grid extends FixedLengthRepetition {
+    constructor(initial: Initial, readonly horizontalItems: number, readonly verticalItems: number,
+                readonly gridSpacingX: number, readonly gridSpacingY: number) {
+      super(Producers.transpose(initial.coords, {
+        // this just produces a diagonal 🙄
+        x: gridSpacingX, y: gridSpacingY
+      }));
+      this.times(horizontalItems * verticalItems);
     }
   }
-
 }
