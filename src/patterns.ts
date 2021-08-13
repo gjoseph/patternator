@@ -55,25 +55,36 @@ export namespace Patterns {
   };
 
   export class Initial {
-    constructor(readonly coords: Coords) {
+    constructor(readonly initialCoords: Coords) {
     }
 
     // TODO split out builder/factories from logic/business methods?
     transposeBy(transposition: NumberOrFunctionOptCoords): FixedLengthRepetition {
-      return new FixedLengthRepetition(Producers.transpose(this.coords, transposition));
+      return new FixedLengthRepetition(Producers.transpose(this.initialCoords, transposition));
     }
 
-    onGrid(horizontalItems: number, verticalItems: number, gridSpacing: number, gridSpacingY?: number) {
-      return this._onGrid(horizontalItems, verticalItems, gridSpacing, (gridSpacingY || gridSpacing));
+    onGrid(horizontalItems: number, verticalItems: number, gridSpacing: number, gridSpacingY: number = gridSpacing) {
+      const oppositeCorner = addCoords(this.initialCoords, {
+        x: (horizontalItems - 1) * gridSpacing,
+        y: (verticalItems - 1) * gridSpacingY
+      });
+      return this.onGridCorners(oppositeCorner, gridSpacing, gridSpacingY);
     }
 
     onGridSize(horizontalItems: number, verticalItems: number, totalSize: Coords) {
-      //TODO assert round numbers, or verify rounding?
-      return this._onGrid(horizontalItems, verticalItems, totalSize.x / horizontalItems, totalSize.y / verticalItems);
+      const oppositeCorner = addCoords(this.initialCoords, totalSize);
+      // TODO do we actually need/want rounding here ?
+      const gridSpacingX = Math.floor(totalSize.x / (horizontalItems - 1));
+      const gridSpacingY = Math.floor(totalSize.y / (verticalItems - 1));
+      return this.onGridCorners(oppositeCorner, gridSpacingX, gridSpacingY);
     }
 
-    private _onGrid(horizontalItems: number, verticalItems: number, gridSpacingX: number, gridSpacingY: number) {
-      return new Grid(this, horizontalItems, verticalItems, gridSpacingX, gridSpacingY);
+    onGridCorners(oppositeCorner: Coords, gridSpacing: number, gridSpacingY: number = gridSpacing) {
+      // console.debug("GRID: ", { initialCorner: this.initialCoords, oppositeCorner, gridSpacing, gridSpacingY });
+      return new BoundedRepetition(Producers.grid(this.initialCoords, oppositeCorner, {
+        x: gridSpacing,
+        y: gridSpacingY
+      }));
     }
 
     /**
@@ -137,25 +148,39 @@ export namespace Patterns {
     }
 
     poll(): Coords {
-      this.currentCoords = this.nextCoords();
+      this.currentCoords = this.coordsProducer.next();
       this.currentIdx++;
       return this.currentCoords;
     }
-
-    protected nextCoords() {
-      return this.coordsProducer.next();
-    }
-
   }
 
-  class Grid extends FixedLengthRepetition {
-    constructor(initial: Initial, readonly horizontalItems: number, readonly verticalItems: number,
-                readonly gridSpacingX: number, readonly gridSpacingY: number) {
-      super(Producers.transpose(initial.coords, {
-        // this just produces a diagonal 🙄
-        x: gridSpacingX, y: gridSpacingY
-      }));
-      this.times(horizontalItems * verticalItems);
+  /**
+   * A repetition that stops when the Producers returns null or undefined (TODO pick a lane)
+   */
+  class BoundedRepetition extends Repetition {
+    protected nextCoords: Coords | undefined = undefined; // state
+    constructor(readonly coordsProducer: Producer<Coords | undefined>) {
+      super();
+      this.preloadNextValue();
+    }
+
+    hasMore(): boolean {
+      return this.nextCoords !== undefined;
+    }
+
+    poll(): Coords {
+      const currentCoords = this.nextCoords;
+      if (currentCoords === undefined) {
+        throw new Error("WTF currentCoords should never be null, did you forget to call hasNext() ?");
+      }
+      this.preloadNextValue();
+      return currentCoords;
+    }
+
+    /** pre-load next, so we can check in hasMore() */
+    private preloadNextValue() {
+      this.nextCoords = this.coordsProducer.next();
     }
   }
+
 }

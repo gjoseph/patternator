@@ -27,7 +27,7 @@ export namespace Producers {
 
   // Coords Producers
   export const transpose = (seed: Coords, step: NumberOrFunctionOptCoords) => new FunctionBasedProducer(seed, prev => addCoords(prev, unwrapOpt(step)));
-
+  export const grid = (firstCorner: Coords, oppositeCorner: Coords, gridSpacing: Coords) => gridProducer(firstCorner, gridSpacing, oppositeCorner);
 }
 
 const randomNumber = (max: number) => Math.floor(Math.random() * max);
@@ -120,3 +120,19 @@ class RandomProducer implements Producer<number> {
   }
 
 }
+
+const gridProducer = (firstCorner: Coords, gridSpacing: Coords, oppositeCorner: Coords) => new FunctionBasedProducer<Coords | undefined>(firstCorner, prev => {
+  if (prev === undefined) {
+    throw new Error("This Producer should never be called if the previous value was undefined");
+  }
+  const next = addCoords(prev, { x: gridSpacing.x, y: 0 });
+  if (next.x > oppositeCorner.x) {
+    next.x = firstCorner.x;
+    next.y = next.y + gridSpacing.y;
+  }
+  if (next.y > oppositeCorner.y) {
+    // STOP!
+    return undefined;
+  }
+  return next;
+});

@@ -5,6 +5,7 @@ import startAt = Patterns.startAt;
 import dec = Producers.dec;
 import inc = Producers.inc;
 import rnd = Producers.rnd;
+import start = Patterns.start;
 
 const MAX_X = 6000;
 const MAX_Y = 6000;
@@ -17,6 +18,9 @@ s.attr({
   strokeWidth: 3
 });
 
+// Frame
+s.rect(0, 0, MAX_X, MAX_Y);
+
 const lines = (px: number, py: number, dx: number = px) => {
   // Multiply by MAX_* == magic number to ensure we cross the boundary of the canvas -- which is really ensuring nothing if we don't do the math here
   px = px * 2000;
@@ -27,13 +31,10 @@ const lines = (px: number, py: number, dx: number = px) => {
 };
 
 const grid = (dx: number, dy: number, init_x = 0, init_y = 0) => {
-  for (var x = init_x; x < MAX_X; x += dx) {
-    for (var y = init_y; y < MAX_Y; y += dy) {
-      s.circle(x, y, 3);
-    }
-  }
+  startAt({ x: init_x, y: init_y }).onGridCorners({ x: MAX_X, y: MAX_Y }, dx, dy).do(c => {
+    s.circle(c.x, c.y, 3);
+  });
 };
-s.rect(0, 0, MAX_X, MAX_Y);
 
 // lines(60, 80, 60);
 // lines(3, 4, 60);
@@ -57,38 +58,44 @@ s.rect(0, 0, MAX_X, MAX_Y);
 // lines(9, 3 , 60);
 // lines(10, 3 , 60);
 
-grid(120, 72, 0, 60);
-grid(120, 72, 60, 24);
-
-function dot(coords: Coords) {
-  console.log("dot -- coords:", coords);
+const dot = (coords: Coords) => {
   s.circle(coords.x, coords.y, 2).attr({
     fill: "#444",
     stroke: "#333",
     strokeWidth: 1
   });
-}
+};
 
-function drawCircle(coords: Coords) {
+const drawCircle = (coords: Coords) => {
   s.circle(coords.x, coords.y, 10).attr({
     fill: "#99c",
     stroke: "#933",
     strokeWidth: 2
   });
-}
+};
 
+// a diagonal of large dots
 startAt({ x: 50, y: 50 }).transposeBy({ x: 50, y: 20 }).times(15).do(drawCircle);
 
+// a random-ish curve of large dots
 startAt({ x: rnd(200), y: rnd(200) })
   .transposeBy({ x: inc(3), y: dec(10) })
   .times(7)
   .do(drawCircle);
 
-// transposes, grids, polygons etc, can just be Producer<Coord> implementations and map to do()
-// ... so we need some producers that _end_, or do we just keep using times()
-// onGrid with times() makes no sense, since the grid has a finite nr of points, so times() should only be available
-// on unbounded generators
+// a small grid of dots
 startAt({ x: 5, y: 0 })
-  .onGrid(20, 20, 120, 72)
-  .times(50)
+  .onGridCorners({ x: 500, y: 500 }, 120, 72)
   .do(dot);
+
+// old grid function rewritten with patterns/producers
+grid(120, 72, 0, 60);
+grid(120, 72, 60, 24);
+
+// a grid where spacing is adjusted based on size and nr of items
+s.rect(0, 0, 1000, 600).attr({stroke:"#000", "strokeWidth": 4});
+
+start().onGridSize(4, 3, {x:1000, y:600}).do(c=>{
+  s.text(c.x,c.y, "Hej!").attr({stroke: "none", fill:"#333",textAnchor:"middle",alignmentBaseline:"hanging"  })
+  }
+)
