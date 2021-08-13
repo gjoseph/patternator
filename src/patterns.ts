@@ -1,26 +1,27 @@
 import { Producer, Producers } from "./producers";
 
 // TODO most `number` arguments can be replaced by a NumberOrProducer
-type NumberOrFunction = number | Producer<number>
+type NumberOrFunction = number | Producer<number>;
 
 export interface Coords {
-  x: number,
-  y: number
+  x: number;
+  y: number;
 }
 
 interface OptCoords {
-  x?: number,
-  y?: number
+  x?: number;
+  y?: number;
 }
 
-interface NumberOrFunctionCoords { // TODO what about Coords|Producer<Coords> ?
-  x: NumberOrFunction,
-  y: NumberOrFunction,
+interface NumberOrFunctionCoords {
+  // TODO what about Coords|Producer<Coords> ?
+  x: NumberOrFunction;
+  y: NumberOrFunction;
 }
 
 export interface NumberOrFunctionOptCoords {
-  x?: NumberOrFunction,
-  y?: NumberOrFunction,
+  x?: NumberOrFunction;
+  y?: NumberOrFunction;
 }
 
 const toNumber = (nof: NumberOrFunction): number => {
@@ -44,7 +45,6 @@ export const addCoords = (a: Coords, b: OptCoords): Coords => {
 };
 
 export namespace Patterns {
-
   export const center = () => {
     throw Error("not implemented yet");
   }; // TODO
@@ -55,23 +55,35 @@ export namespace Patterns {
   };
 
   export class Initial {
-    constructor(readonly initialCoords: Coords) {
-    }
+    constructor(readonly initialCoords: Coords) {}
 
     // TODO split out builder/factories from logic/business methods?
-    transposeBy(transposition: NumberOrFunctionOptCoords): FixedLengthRepetition {
-      return new FixedLengthRepetition(Producers.transpose(this.initialCoords, transposition));
+    transposeBy(
+      transposition: NumberOrFunctionOptCoords
+    ): FixedLengthRepetition {
+      return new FixedLengthRepetition(
+        Producers.transpose(this.initialCoords, transposition)
+      );
     }
 
-    onGrid(horizontalItems: number, verticalItems: number, gridSpacing: number, gridSpacingY: number = gridSpacing) {
+    onGrid(
+      horizontalItems: number,
+      verticalItems: number,
+      gridSpacing: number,
+      gridSpacingY: number = gridSpacing
+    ) {
       const oppositeCorner = addCoords(this.initialCoords, {
         x: (horizontalItems - 1) * gridSpacing,
-        y: (verticalItems - 1) * gridSpacingY
+        y: (verticalItems - 1) * gridSpacingY,
       });
       return this.onGridCorners(oppositeCorner, gridSpacing, gridSpacingY);
     }
 
-    onGridSize(horizontalItems: number, verticalItems: number, totalSize: Coords) {
+    onGridSize(
+      horizontalItems: number,
+      verticalItems: number,
+      totalSize: Coords
+    ) {
       const oppositeCorner = addCoords(this.initialCoords, totalSize);
       // TODO do we actually need/want rounding here ?
       const gridSpacingX = Math.floor(totalSize.x / (horizontalItems - 1));
@@ -79,27 +91,29 @@ export namespace Patterns {
       return this.onGridCorners(oppositeCorner, gridSpacingX, gridSpacingY);
     }
 
-    onGridCorners(oppositeCorner: Coords, gridSpacing: number, gridSpacingY: number = gridSpacing) {
+    onGridCorners(
+      oppositeCorner: Coords,
+      gridSpacing: number,
+      gridSpacingY: number = gridSpacing
+    ) {
       // console.debug("GRID: ", { initialCorner: this.initialCoords, oppositeCorner, gridSpacing, gridSpacingY });
-      return new BoundedRepetition(Producers.grid(this.initialCoords, oppositeCorner, {
-        x: gridSpacing,
-        y: gridSpacingY
-      }));
+      return new BoundedRepetition(
+        Producers.grid(this.initialCoords, oppositeCorner, {
+          x: gridSpacing,
+          y: gridSpacingY,
+        })
+      );
     }
 
     /**
      * Places points on vertices of a polygon of N sides.
      */
-    onPolygon(sides: number, sideLength: number) {
-
-    }
+    onPolygon(sides: number, sideLength: number) {}
 
     /**
      * Equivalent to #onPolygon but places points on an enclosing circles; sides length unknown to user.
      */
-    onCircle(repeats: number, diameter: number) {
-
-    }
+    onCircle(repeats: number, diameter: number) {}
   }
 
   abstract class Repetition {
@@ -171,7 +185,9 @@ export namespace Patterns {
     poll(): Coords {
       const currentCoords = this.nextCoords;
       if (currentCoords === undefined) {
-        throw new Error("WTF currentCoords should never be null, did you forget to call hasNext() ?");
+        throw new Error(
+          "WTF currentCoords should never be null, did you forget to call hasNext() ?"
+        );
       }
       this.preloadNextValue();
       return currentCoords;
@@ -182,5 +198,4 @@ export namespace Patterns {
       this.nextCoords = this.coordsProducer.next();
     }
   }
-
 }

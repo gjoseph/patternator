@@ -5,7 +5,12 @@
  *
  * Couldn't call this Generator because lib.es2015.generator
  */
-import { addCoords, Coords, NumberOrFunctionOptCoords, unwrapOpt } from "./patterns";
+import {
+  addCoords,
+  Coords,
+  NumberOrFunctionOptCoords,
+  unwrapOpt,
+} from "./patterns";
 
 export interface Producer<T> {
   next(): T;
@@ -35,8 +40,7 @@ const randomNumber = (max: number) => Math.floor(Math.random() * max);
 class Ring<T> implements Producer<T> {
   private i = -1;
 
-  constructor(readonly values: T[]) {
-  }
+  constructor(readonly values: T[]) {}
 
   next(): T {
     this.i = (this.i + 1) % this.values.length;
@@ -49,8 +53,7 @@ class Yoyo<T> implements Producer<T> {
   private forward = true;
   private stalling = true;
 
-  constructor(readonly values: T[], readonly repeatEnds: boolean) {
-  }
+  constructor(readonly values: T[], readonly repeatEnds: boolean) {}
 
   next(): T {
     // Surely, there is math-ier way to implement this
@@ -60,14 +63,16 @@ class Yoyo<T> implements Producer<T> {
       this.i--;
     }
     // could do forward=!forward except for the first iteration where i=0 and we need to go fwd
-    if (this.i == this.values.length - 1) { // end
+    if (this.i == this.values.length - 1) {
+      // end
       if (this.repeatEnds && !this.stalling) {
         this.stalling = true;
       } else {
         this.forward = false;
         this.stalling = false;
       }
-    } else if (this.i == 0) { // start
+    } else if (this.i == 0) {
+      // start
       if (this.repeatEnds && !this.stalling) {
         this.stalling = true;
       } else {
@@ -80,13 +85,11 @@ class Yoyo<T> implements Producer<T> {
 }
 
 class RandomOrder<T> implements Producer<T> {
-  constructor(readonly values: T[]) {
-  }
+  constructor(readonly values: T[]) {}
 
   next(): T {
     return this.values[randomNumber(this.values.length)];
   }
-
 }
 
 /**

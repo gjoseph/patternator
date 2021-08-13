@@ -15,7 +15,7 @@ s.attr({
   stroke: "#3d9",
   __stroke: "#559",
   _stroke: "#955",
-  strokeWidth: 3
+  strokeWidth: 3,
 });
 
 // Frame
@@ -31,9 +31,11 @@ const lines = (px: number, py: number, dx: number = px) => {
 };
 
 const grid = (dx: number, dy: number, init_x = 0, init_y = 0) => {
-  startAt({ x: init_x, y: init_y }).onGridCorners({ x: MAX_X, y: MAX_Y }, dx, dy).do(c => {
-    s.circle(c.x, c.y, 3);
-  });
+  startAt({ x: init_x, y: init_y })
+    .onGridCorners({ x: MAX_X, y: MAX_Y }, dx, dy)
+    .do((c) => {
+      s.circle(c.x, c.y, 3);
+    });
 };
 
 // lines(60, 80, 60);
@@ -62,7 +64,7 @@ const dot = (coords: Coords) => {
   s.circle(coords.x, coords.y, 2).attr({
     fill: "#444",
     stroke: "#333",
-    strokeWidth: 1
+    strokeWidth: 1,
   });
 };
 
@@ -70,12 +72,15 @@ const drawCircle = (coords: Coords) => {
   s.circle(coords.x, coords.y, 10).attr({
     fill: "#99c",
     stroke: "#933",
-    strokeWidth: 2
+    strokeWidth: 2,
   });
 };
 
 // a diagonal of large dots
-startAt({ x: 50, y: 50 }).transposeBy({ x: 50, y: 20 }).times(15).do(drawCircle);
+startAt({ x: 50, y: 50 })
+  .transposeBy({ x: 50, y: 20 })
+  .times(15)
+  .do(drawCircle);
 
 // a random-ish curve of large dots
 startAt({ x: rnd(200), y: rnd(200) })
@@ -84,18 +89,22 @@ startAt({ x: rnd(200), y: rnd(200) })
   .do(drawCircle);
 
 // a small grid of dots
-startAt({ x: 5, y: 0 })
-  .onGridCorners({ x: 500, y: 500 }, 120, 72)
-  .do(dot);
+startAt({ x: 5, y: 0 }).onGridCorners({ x: 500, y: 500 }, 120, 72).do(dot);
 
 // old grid function rewritten with patterns/producers
 grid(120, 72, 0, 60);
 grid(120, 72, 60, 24);
 
 // a grid where spacing is adjusted based on size and nr of items
-s.rect(0, 0, 1000, 600).attr({stroke:"#000", "strokeWidth": 4});
+s.rect(0, 0, 1000, 600).attr({ stroke: "#000", strokeWidth: 4 });
 
-start().onGridSize(4, 3, {x:1000, y:600}).do(c=>{
-  s.text(c.x,c.y, "Hej!").attr({stroke: "none", fill:"#333",textAnchor:"middle",alignmentBaseline:"hanging"  })
-  }
-)
+start()
+  .onGridSize(4, 3, { x: 1000, y: 600 })
+  .do((c) => {
+    s.text(c.x, c.y, "Hej!").attr({
+      stroke: "none",
+      fill: "#333",
+      textAnchor: "middle",
+      alignmentBaseline: "hanging",
+    });
+  });

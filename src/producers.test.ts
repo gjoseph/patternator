@@ -79,5 +79,4 @@ describe("Generates number values", () => {
   it.todo("sin");
   it.todo("cos");
   it.todo("other math functions");
-
 });
