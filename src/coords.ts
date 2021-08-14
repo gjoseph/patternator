@@ -43,3 +43,13 @@ export const unwrapOpt = (nofOptCoords: NumberOrFunctionOptCoords): Coords => {
 export const addCoords = (a: Coords, b: OptCoords): Coords => {
   return { x: a.x + (b.x || 0), y: a.y + (b.y || 0) };
 };
+
+// TODO move this and under under a namespace or module or whatever?
+export const equalCoords = (
+  a: NumberOrFunctionOptCoords,
+  b: NumberOrFunctionOptCoords
+): boolean => {
+  const ua = unwrapOpt(a);
+  const ub = unwrapOpt(b);
+  return ua.x === ub.x && ua.y === ub.y;
+};

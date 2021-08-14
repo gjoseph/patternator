@@ -1,5 +1,5 @@
 import Snap from "snapsvg";
-import { Coords } from "./coords";
+import { Coords, equalCoords } from "./coords";
 import { Patterns } from "./patterns";
 import { Producers } from "./producers";
 import start = Patterns.start;
@@ -56,19 +56,27 @@ const lines = (px: number, py: number, dx: number = px) => {
 const dot =
   (color: string = "#444") =>
   (coords: Coords) => {
-    s.circle(coords.x, coords.y, 2).attr({
+    s.circle(coords.x, coords.y, 1).attr({
       fill: color,
       stroke: "none",
     });
   };
 
-const circle = (coords: Coords) => {
-  s.circle(coords.x, coords.y, 10).attr({
-    fill: "#99c",
-    stroke: "#933",
-    strokeWidth: 2,
-  });
-};
+const circle =
+  (stroke = "#933", fill = "none") =>
+  (coords: Coords) => {
+    s.circle(coords.x, coords.y, 5).attr({
+      fill: fill,
+      stroke: stroke,
+      strokeWidth: 2,
+    });
+  };
+
+const circleBlackOr =
+  (startPos: Coords, defaultColor: string) => (c: Coords) => {
+    const color = equalCoords(c, startPos) ? "black" : defaultColor;
+    circle(color)(c);
+  };
 
 const text = (text: string) => (c: Coords) => {
   s.text(c.x, c.y, text).attr({
@@ -80,22 +88,48 @@ const text = (text: string) => (c: Coords) => {
 };
 
 // a diagonal of large dots
-startAt({ x: 50, y: 50 }).transposeBy({ x: 50, y: 20 }).times(15).do(circle);
+startAt({ x: 50, y: 50 })
+  .transposeBy({ x: 50, y: 20 })
+  .times(15)
+  .do(circle("#339", "#77c"));
 
 // a random-ish curve of large dots
 startAt({ x: rnd(200), y: rnd(200) })
   .transposeBy({ x: inc(3), y: dec(10) })
   .times(7)
-  .do(circle);
+  .do(circle("#933", "#99c"));
 
 // a small grid of dots
-// startAt({ x: 5, y: 0 }).onGridCorners({ x: 500, y: 500 }, 120, 72).do(dot());
+startAt({ x: 5, y: 0 }).gridUntil({ x: 500, y: 500 }, 120, 72).do(dot());
+start().grid(50, 50, 10).do(dot());
 
-// alternate grids
+// alternating grids
 const oppositeCorner = { x: MAX_X, y: MAX_Y };
 startAt({ x: 0, y: 60 }).gridUntil(oppositeCorner, 120, 72).do(dot("red"));
 startAt({ x: 60, y: 24 }).gridUntil(oppositeCorner, 120, 72).do(dot("green"));
 
 // a grid where spacing is adjusted based on size and nr of items
 s.rect(0, 0, 1000, 600).attr({ stroke: "#000", strokeWidth: 4 });
-start().gridToFit(4, 3, { x: 1000, y: 600 }).do(text("Hi!"));
+start().gridToFit(10, 10, { x: 1000, y: 600 }).do(dot());
+
+// Polygons
+s.circle(100, 100, 80);
+startAt({ x: 100, y: 100 })
+  .onCircle(3, 160)
+  .do(circleBlackOr({ x: 105, y: 180 }, "#393"));
+startAt({ x: 300, y: 200 })
+  .onCircle(8, 100)
+  .do(circleBlackOr({ x: 300, y: 250 }, "#935"));
+startAt({ x: 105, y: 300 })
+  .onCircle(5, 200)
+  .do(circleBlackOr({ x: 105, y: 400 }, "#359"));
+startAt({ x: 300, y: 200 })
+  .onCircle(9, 100)
+  .do(circleBlackOr({ x: 300, y: 250 }, "pink"));
+
+startAt({ x: 400, y: 100 }).onCircle(20, 100).do(circle("#a39032"));
+
+s.circle(400, 400, 80);
+startAt({ x: 400, y: 400 })
+  .onCircle(4, 160)
+  .do(circleBlackOr({ x: 105, y: 180 }, "#393"));
