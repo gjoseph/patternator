@@ -1,48 +1,11 @@
+import {
+  addCoords,
+  Coords,
+  NumberOrFunctionCoords,
+  NumberOrFunctionOptCoords,
+  unwrap,
+} from "./coords";
 import { Producer, Producers } from "./producers";
-
-// TODO most `number` arguments can be replaced by a NumberOrProducer
-type NumberOrFunction = number | Producer<number>;
-
-export interface Coords {
-  x: number;
-  y: number;
-}
-
-interface OptCoords {
-  x?: number;
-  y?: number;
-}
-
-interface NumberOrFunctionCoords {
-  // TODO what about Coords|Producer<Coords> ?
-  x: NumberOrFunction;
-  y: NumberOrFunction;
-}
-
-export interface NumberOrFunctionOptCoords {
-  x?: NumberOrFunction;
-  y?: NumberOrFunction;
-}
-
-const toNumber = (nof: NumberOrFunction): number => {
-  if (typeof nof === "number") {
-    return nof;
-  } else {
-    return nof.next();
-  }
-};
-
-const unwrap = (nofCoords: NumberOrFunctionCoords): Coords => {
-  return { x: toNumber(nofCoords.x), y: toNumber(nofCoords.y) };
-};
-
-export const unwrapOpt = (nofOptCoords: NumberOrFunctionOptCoords): Coords => {
-  return { x: toNumber(nofOptCoords.x || 0), y: toNumber(nofOptCoords.y || 0) };
-};
-
-export const addCoords = (a: Coords, b: OptCoords): Coords => {
-  return { x: a.x + (b.x || 0), y: a.y + (b.y || 0) };
-};
 
 export namespace Patterns {
   export const center = () => {

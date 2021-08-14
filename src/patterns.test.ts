@@ -1,4 +1,5 @@
-import { Coords, Patterns } from "./patterns";
+import { Coords } from "./coords";
+import { Patterns } from "./patterns";
 import start = Patterns.start;
 import startAt = Patterns.startAt;
 

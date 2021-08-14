@@ -1,5 +1,6 @@
 import Snap from "snapsvg";
-import { Coords, Patterns } from "./patterns";
+import { Coords } from "./coords";
+import { Patterns } from "./patterns";
 import { Producers } from "./producers";
 import start = Patterns.start;
 import startAt = Patterns.startAt;

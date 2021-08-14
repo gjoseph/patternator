@@ -10,7 +10,7 @@ import {
   Coords,
   NumberOrFunctionOptCoords,
   unwrapOpt,
-} from "./patterns";
+} from "./coords";
 
 export interface Producer<T> {
   next(): T;
