@@ -24,15 +24,20 @@ export namespace Producers {
   export const randomOrder = <T>(values: T[]) => new RandomOrder(values);
 
   // Number Producers
-  export const inc = (seed: number, step = 1) => new FunctionBasedProducer(seed, (n: number) => n + step);
-  export const dec = (seed: number, step = 1) => new FunctionBasedProducer(seed, (n: number) => n - step);
-  export const fun = (seed: number, fun: (n: number) => number) => new FunctionBasedProducer(seed, fun);
+  export const inc = (seed: number, step = 1) =>
+    new FuncProducer(seed, (n) => n + step);
+  export const dec = (seed: number, step = 1) =>
+    new FuncProducer(seed, (n) => n - step);
+  export const fun = (seed: number, fun: (n: number) => number) =>
+    new FuncProducer(seed, fun);
   /** Produces a random number between 0 and max included (I dunno it feels more human to include max, this isn't for nerds) */
   export const rnd = (max: number) => new RandomProducer(max);
 
   // Coords Producers
-  export const transpose = (seed: Coords, step: NumberOrFunctionOptCoords) => new FunctionBasedProducer(seed, prev => addCoords(prev, unwrapOpt(step)));
-  export const grid = (firstCorner: Coords, oppositeCorner: Coords, gridSpacing: Coords) => gridProducer(firstCorner, gridSpacing, oppositeCorner);
+  export const transpose = (seed: Coords, step: NumberOrFunctionOptCoords) =>
+    new FuncProducer(seed, (prev) => addCoords(prev, unwrapOpt(step)));
+  export const grid = (first: Coords, opposite: Coords, spacing: Coords) =>
+    gridProducer(first, opposite, spacing);
 }
 
 const randomNumber = (max: number) => Math.floor(Math.random() * max);
@@ -95,7 +100,7 @@ class RandomOrder<T> implements Producer<T> {
 /**
  * A producer which gets its next value through a function, and uses it to seed the next call and so on.
  */
-class FunctionBasedProducer<T> implements Producer<T> {
+class FuncProducer<T> implements Producer<T> {
   private val: T | undefined;
 
   constructor(readonly seed: T, readonly fun: (previous: T) => T) {
@@ -111,31 +116,33 @@ class FunctionBasedProducer<T> implements Producer<T> {
     }
     return this.val;
   }
-
 }
 
+const gridProducer = (
+  firstCorner: Coords,
+  oppositeCorner: Coords,
+  gridSpacing: Coords
+) =>
+  new FuncProducer<Coords | undefined>(firstCorner, (prev) => {
+    if (prev === undefined) {
+      throw new Error("Should never be called if previous value was undefined");
+    }
+    const next = addCoords(prev, { x: gridSpacing.x, y: 0 });
+    if (next.x > oppositeCorner.x) {
+      next.x = firstCorner.x;
+      next.y = next.y + gridSpacing.y;
+    }
+    if (next.y > oppositeCorner.y) {
+      // STOP!
+      return undefined;
+    }
+    return next;
+  });
+
 class RandomProducer implements Producer<number> {
-  constructor(readonly max: number) {
-  }
+  constructor(readonly max: number) {}
 
   next(): number {
     return randomNumber(this.max + 1);
   }
-
 }
-
-const gridProducer = (firstCorner: Coords, gridSpacing: Coords, oppositeCorner: Coords) => new FunctionBasedProducer<Coords | undefined>(firstCorner, prev => {
-  if (prev === undefined) {
-    throw new Error("This Producer should never be called if the previous value was undefined");
-  }
-  const next = addCoords(prev, { x: gridSpacing.x, y: 0 });
-  if (next.x > oppositeCorner.x) {
-    next.x = firstCorner.x;
-    next.y = next.y + gridSpacing.y;
-  }
-  if (next.y > oppositeCorner.y) {
-    // STOP!
-    return undefined;
-  }
-  return next;
-});
