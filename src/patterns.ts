@@ -66,7 +66,7 @@ export namespace Patterns {
       );
     }
 
-    onGrid(
+    grid(
       horizontalItems: number,
       verticalItems: number,
       gridSpacing: number,
@@ -76,10 +76,10 @@ export namespace Patterns {
         x: (horizontalItems - 1) * gridSpacing,
         y: (verticalItems - 1) * gridSpacingY,
       });
-      return this.onGridCorners(oppositeCorner, gridSpacing, gridSpacingY);
+      return this.gridUntil(oppositeCorner, gridSpacing, gridSpacingY);
     }
 
-    onGridSize(
+    gridToFit(
       horizontalItems: number,
       verticalItems: number,
       totalSize: Coords
@@ -88,10 +88,10 @@ export namespace Patterns {
       // TODO do we actually need/want rounding here ?
       const gridSpacingX = Math.floor(totalSize.x / (horizontalItems - 1));
       const gridSpacingY = Math.floor(totalSize.y / (verticalItems - 1));
-      return this.onGridCorners(oppositeCorner, gridSpacingX, gridSpacingY);
+      return this.gridUntil(oppositeCorner, gridSpacingX, gridSpacingY);
     }
 
-    onGridCorners(
+    gridUntil(
       oppositeCorner: Coords,
       gridSpacing: number,
       gridSpacingY: number = gridSpacing
