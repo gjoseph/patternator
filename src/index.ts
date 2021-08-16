@@ -2,11 +2,12 @@ import Snap from "snapsvg";
 import { Coords, equalCoords } from "./coords";
 import { Patterns } from "./patterns";
 import { Producers } from "./producers";
-import start = Patterns.start;
+import { cone, cup, cylinder, DevelopedVolume } from "./volumes";
 import startAt = Patterns.startAt;
-import dec = Producers.dec;
+import start = Patterns.start;
 import inc = Producers.inc;
 import rnd = Producers.rnd;
+import dec = Producers.dec;
 
 const MAX_X = 6000;
 const MAX_Y = 6000;
@@ -133,3 +134,44 @@ s.circle(400, 400, 80);
 startAt({ x: 400, y: 400 })
   .onCircle(4, 160)
   .do(circleBlackOr({ x: 105, y: 180 }, "#393"));
+
+const textAttr = {
+  stroke: "none",
+  fill: "#333",
+  fontFamily: "Spot Mono",
+  textAnchor: "left",
+  alignmentBaseline: "hanging",
+};
+
+function debug(surface: DevelopedVolume, txtClr: string) {
+  return [
+    s.text(-20, -20, surface.description).attr(textAttr),
+    ...surface.poi.flatMap((poi) => {
+      console.log("poi:", poi);
+      return [
+        s.circle(poi.x, poi.y, 5).attr({ stroke: "red" }),
+        s
+          .text(poi.x + 5, poi.y + 5, poi.description)
+          .attr({ ...textAttr, fill: txtClr }),
+      ];
+    }),
+  ];
+}
+
+const cyl = cylinder(100, 180);
+s.group(
+  cyl.developOn(s).attr({ stroke: "#934", strokeWidth: 4 }),
+  ...debug(cyl, "#934")
+).transform("t100,100");
+
+const cone1 = cone(100, 180);
+s.group(
+  cone1.developOn(s).attr({ stroke: "#39d", strokeWidth: 4 }),
+  ...debug(cone1, "#39d")
+).transform("t200,350");
+
+const cup1 = cup(60, 100, 150);
+s.group(
+  cup1.developOn(s).attr({ stroke: "#393", strokeWidth: 4 }),
+  ...debug(cup1, "#393")
+).transform("t500,250");

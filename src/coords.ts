@@ -8,6 +8,18 @@ export interface Coords {
   y: number;
 }
 
+export interface DescribedCoord extends Coords {
+  description: string;
+}
+
+export const desc = (c: Coords, d: string): DescribedCoord => {
+  return {
+    x: c.x,
+    y: c.y,
+    description: d,
+  };
+};
+
 interface OptCoords {
   x?: number;
   y?: number;
