@@ -2,9 +2,11 @@
  * An annulus sector is a cut from an annulus, which is bordered by two straight lines from its center.
  */
 import { Coords } from "../coords";
+import { AngleInDegrees } from "../misc";
+import { Shape } from "./shape";
 
-export interface AnnulusSector {
-  angle: number;
+export interface AnnulusSector extends Shape {
+  angle: AngleInDegrees;
   innerRadius: number;
   outerRadius: number;
   pathSpec: string;
@@ -19,7 +21,7 @@ export interface AnnulusSector {
 
 // Based on https://gist.github.com/leefsmp/f721678ee443f1031a74#file-snap-arc-demo-html ...
 export const annulusSector = (
-  angle: number,
+  angle: AngleInDegrees,
   outerRadius: number,
   innerRadius = 0
 ): AnnulusSector => {

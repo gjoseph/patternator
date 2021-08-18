@@ -143,7 +143,7 @@ const textAttr = {
   alignmentBaseline: "hanging",
 };
 
-function debug(surface: DevelopedVolume, txtClr: string) {
+function debug(surface: DevelopedVolume<any>, txtClr: string) {
   return [
     s.text(-20, -20, surface.description).attr(textAttr),
     ...surface.poi.flatMap((poi) => {
@@ -158,20 +158,25 @@ function debug(surface: DevelopedVolume, txtClr: string) {
   ];
 }
 
+
+function develop(dev: DevelopedVolume<any>) {
+ return s.path(dev.developed.pathSpec);
+}
+
 const cyl = cylinder(100, 180);
 s.group(
-  cyl.developOn(s).attr({ stroke: "#934", strokeWidth: 4 }),
+  develop(cyl).attr({ stroke: "#934", strokeWidth: 4 }),
   ...debug(cyl, "#934")
 ).transform("t100,100");
 
 const cone1 = cone(100, 180);
 s.group(
-  cone1.developOn(s).attr({ stroke: "#39d", strokeWidth: 4 }),
+  develop(cone1).attr({ stroke: "#39d", strokeWidth: 4 }),
   ...debug(cone1, "#39d")
 ).transform("t200,350");
 
 const cup1 = cup(60, 100, 150);
 s.group(
-  cup1.developOn(s).attr({ stroke: "#393", strokeWidth: 4 }),
+  develop(cup1).attr({ stroke: "#393", strokeWidth: 4 }),
   ...debug(cup1, "#393")
 ).transform("t500,250");

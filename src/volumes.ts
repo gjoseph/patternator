@@ -1,4 +1,5 @@
 import { DescribedCoord } from "./coords";
+import { Shape } from "./shapes/shape";
 import { ConeFrustum } from "./volumes/cone-frustum";
 import { Cylinder } from "./volumes/cylinder";
 
@@ -39,9 +40,11 @@ export const bowl = {
  * I hate to use Instructables as a source but...
  * https://www.instructables.com/Development-Pattern-Construction/
  */
-export interface DevelopedVolume {
+export interface DevelopedVolume<T extends Shape> {
+  developed: T;
+
   // TODO return instead, don't actually draw, if that's possible?
-  developOn(paper: Snap.Paper): Snap.Element;
+  // developOn(paper: Snap.Paper): Snap.Element;
 
   /**
    * Points of Interest, relative to 0,0 of the paper we're drawing this on,

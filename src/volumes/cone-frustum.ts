@@ -5,10 +5,10 @@ import { DevelopedVolume } from "../volumes";
 /**
  * Cone or truncated cone.
  */
-export class ConeFrustum implements DevelopedVolume {
+export class ConeFrustum implements DevelopedVolume<AnnulusSector> {
   private readonly slantHeight: number;
   readonly developed: AnnulusSector;
-  readonly poi: DescribedCoord[];
+  readonly poi: DescribedCoord[]; // TODO type these like AnnulusSector
   readonly description: string;
 
   constructor(
@@ -42,21 +42,23 @@ export class ConeFrustum implements DevelopedVolume {
     const sectorAngle = 360 * (baseRadius / outerRadius);
     this.developed = annulusSector(sectorAngle, outerRadius, innerRadius);
     this.poi = [
-      { x: 0, y: outerRadius, description: "bottomCenter" },
       desc(this.developed.points.arcCenter, "arcCenter"),
+      { x: 0, y: this.slantHeight / 2 + innerRadius, description: "center" },
       desc(this.developed.points.startOuterCurve, "startOuterCurve"),
+      { x: 0, y: outerRadius, description: "centerOuterCurve" },
       desc(this.developed.points.endOuterCurve, "endOuterCurve"),
     ];
     if (truncDiameter > 0) {
       this.poi.push(
         desc(this.developed.points.startInnerCurve, "startInnerCurve"),
+        { x: 0, y: innerRadius, description: "centerInnerCurve" },
         desc(this.developed.points.endInnerCurve, "endInnerCurve")
       );
     }
     this.description = `Frustum(dTop: ${this.truncDiameter}, dBottom: ${baseDiameter}, h: ${this.height} (slantHeight: ${this.slantHeight}))`;
   }
-
-  developOn(paper: Snap.Paper): Snap.Element {
-    return paper.path(this.developed.pathSpec);
-  }
+  //
+  // developOn(paper: Snap.Paper): Snap.Element {
+  //   return paper.path(this.developed.pathSpec);
+  // }
 }
