@@ -1,5 +1,5 @@
 import { DescribedCoord } from "../coords";
-import { Rectangle } from "../shapes/rectangle";
+import { rectangle, Rectangle } from "../shapes/rectangle";
 import { DevelopedVolume } from "../volumes";
 
 export class Cylinder implements DevelopedVolume<Rectangle> {
@@ -18,11 +18,6 @@ export class Cylinder implements DevelopedVolume<Rectangle> {
       { x: this.width / 2, y: this.height / 2, description: "center" },
     ];
     this.description = `Cylinder(d: ${this.diameter}, h: ${this.height})`;
-    // TODO obvs
-    this.developed = {pathSpec:'NOOOO', points:{}}
-  }
-
-  developOn(p: Snap.Paper) {
-    return p.rect(0, 0, this.width, this.height);
+    this.developed = rectangle(this.width, this.height);
   }
 }

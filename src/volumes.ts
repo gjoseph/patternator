@@ -43,12 +43,10 @@ export const bowl = {
 export interface DevelopedVolume<T extends Shape> {
   developed: T;
 
-  // TODO return instead, don't actually draw, if that's possible?
-  // developOn(paper: Snap.Paper): Snap.Element;
-
   /**
    * Points of Interest, relative to 0,0 of the paper we're drawing this on,
    * if we're sticking the surface to the top-left-est position possible.
+   * TODO: reuse Shape.points?
    */
   poi: DescribedCoord[];
 
