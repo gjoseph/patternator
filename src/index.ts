@@ -2,6 +2,8 @@ import Snap from "snapsvg";
 import { Coords, equalCoords } from "./coords";
 import { Patterns } from "./patterns";
 import { Producers } from "./producers";
+import { rectangle } from "./shapes/rectangle";
+import { triangle } from "./shapes/triangles";
 import { cone, cup, cylinder, DevelopedVolume } from "./volumes";
 import startAt = Patterns.startAt;
 import start = Patterns.start;
@@ -180,3 +182,7 @@ s.group(
   develop(cup1).attr({ stroke: "#393", strokeWidth: 4 }),
   ...debug(cup1, "#393")
 ).transform("t500,250");
+
+// Shapes:
+s.path(rectangle(30, 40).pathSpec).transform("t 100 100")
+s.path(triangle(100, 140).pathSpec).transform("t 200 200")

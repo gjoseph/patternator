@@ -23,7 +23,7 @@ export interface Triangle extends Shape {
 /**
  * If 1 parameter is given, returns an equilateral triangle. If 2 parameters are given, returns a right angle triangle,
  * where the hypotenuse is derived from the given a and b side lengths.
- * The triangle will be drawn such that points a and b are on the same x-axis and point c is drawn below on the y-axis
+ * The triangle will be drawn such that points a and b are on the same x-axis and point c is drawn below on the y-axis.
  */
 export const triangle = (
   lengthSideA: number,
@@ -35,12 +35,25 @@ export const triangle = (
   } else if (lengthSideC === undefined) {
     lengthSideC = Math.hypot(lengthSideA, lengthSideB);
   }
-  return {
-    points: { a: { x: 0, y: 0 }, b: { x: 0, y: 0 }, c: { x: 0, y: 0 } },
+
+  const a = { x: 0, y: 0 };
+  const b = { x: lengthSideC, y: 0 };
+  // https://math.stackexchange.com/questions/2480560/computing-coordinates-of-vertices-in-a-sss-triangle
+  // This is also apply law of cosines, but isn't applying cos-1 to it!?
+  const cX = lengthSideB * (sq(lengthSideB) + sq(lengthSideC) - sq(lengthSideA)) / (2 * lengthSideB * lengthSideC);
+  const c = {
+    x: cX,
+    y: Math.sqrt(sq(lengthSideB)-sq(cX))
+  }
+
+  const triangle = {
+    points: { a, b, c },
     sides: { a: lengthSideA, b: lengthSideB, c: lengthSideC },
     angles: findAnglesFromSides(lengthSideA, lengthSideB, lengthSideC),
-    pathSpec: "M0 0, l",
+    pathSpec: `M0 0, L${lengthSideC} 0, L${c.x} ${c.y}, L0 0`,
   };
+  console.log("triangle:", triangle);
+  return triangle;
 };
 
 /*
