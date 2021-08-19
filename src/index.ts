@@ -5,11 +5,11 @@ import { Producers } from "./producers";
 import { rectangle } from "./shapes/rectangle";
 import { triangle } from "./shapes/triangles";
 import { cone, cup, cylinder, DevelopedVolume } from "./volumes";
-import startAt = Patterns.startAt;
 import start = Patterns.start;
+import startAt = Patterns.startAt;
+import dec = Producers.dec;
 import inc = Producers.inc;
 import rnd = Producers.rnd;
-import dec = Producers.dec;
 
 const MAX_X = 6000;
 const MAX_Y = 6000;
@@ -27,6 +27,7 @@ s.rect(0, 0, MAX_X, MAX_Y);
 
 const lines = (px: number, py: number, dx: number = px) => {
   // Multiply by MAX_* == magic number to ensure we cross the boundary of the canvas -- which is really ensuring nothing if we don't do the math here
+  // whatever px meant, we augment it and create a bigger angle... i don't think it was meant to do be used this way...
   px = px * 2000;
   py = py * 2000;
   for (var x = -px; -MAX_X < x && x < MAX_X; x += dx) {
@@ -44,9 +45,32 @@ const lines = (px: number, py: number, dx: number = px) => {
 // lines(-3, 3, -60);
 // lines(-2, 3, -120);
 // lines(-1, 3, -60);
-// // lines(0, 3, 60);
-// lines(1, 3, 60);
+// lines(0, 3, 60);
+// lines(0.5, 3, 60);
+lines(1, 3, 60);
+lines(2, 3, 60);
 // lines(2, 3, 120);
+// lines(2, 4, 120);
+
+// TODO merge transposeBy() and times()?
+// not sure there's many interesting use-cases for a set nr of repetitions, instead
+// have automated repetitions that take the pattern out of screen (or better yet make it infinitely repeating over a cylinder)
+startAt({
+  x: -500,
+  y: 0,
+})
+  .transposeBy({ x: 60 })
+  .times(60)
+  .do((c) => s.line(c.x, c.y, c.x + 100, c.y + 2000).attr({ stroke: "#8d2" }));
+const p1 = s.polygon(["103.324,10 135.324,32 236.676,32 204.676,20 "]);
+p1.attr({
+  fill: "#888",
+  stroke: "#432",
+});
+s.polygon([203.324, 10, 235.324, 32, 336.676, 32, 304.676, 20]).attr({
+  stroke: "#393",
+});
+
 // lines(4, 3 , 60);
 // lines(5, 3 , 60);
 // no output, too flat?
@@ -160,9 +184,8 @@ function debug(surface: DevelopedVolume<any>, txtClr: string) {
   ];
 }
 
-
 function develop(dev: DevelopedVolume<any>) {
- return s.path(dev.developed.pathSpec);
+  return s.path(dev.developed.pathSpec);
 }
 
 const cyl = cylinder(100, 180);
@@ -184,7 +207,43 @@ s.group(
 ).transform("t500,250");
 
 // Shapes:
-s.path(rectangle(30, 40).pathSpec).transform("t 100 100")
-s.path(triangle(100).pathSpec).transform("t 200 200")
-s.path(triangle(100, 140).pathSpec).transform("t 400 200")
-s.path(triangle(100, 140, 140).pathSpec).transform("t 200 400")
+s.path(rectangle(90, 120).pathSpec).transform("t 100 100");
+s.path(triangle(100).pathSpec).transform("t 200 200");
+s.path(triangle(100, 140).pathSpec).transform("t 400 200");
+s.path(triangle(100, 140, 140).pathSpec).transform("t 200 400");
+
+// TODO: do the following with a nicer syntax and the producers:
+[0, 120, 240].map((a) => {
+  s.polygon([40, 30, 60, 60, 20, 60])
+    .attr({ stroke: "#3e7ed2" })
+    .transform(`r${a},60,60`);
+});
+
+// transform() supports 2 notations; r180 seems to be snap-specific and is always relative, whereas rotate() is the same as css and isn't relative?
+s.polygon([40, 30, 60, 60, 20, 60]).transform(`r180`);
+s.polygon([240, 230, 260, 260, 220, 260]).transform(`rotate(180 200 200 )`);
+s.polygon([240, 230, 260, 260, 220, 260]).transform(`rotate(1turn )`);
+
+// grid + native polygon:
+// start()
+//   .grid(8, 8, 40, 40)
+//   .do((c) => {
+//     s.polygon([c.x + 40, c.y + 30, c.x + 50, c.y + 60, c.x + 30, c.y + 60])
+//       .attr({ stroke: "#4d9d9f" })
+//       .clone()
+//       .transform("r180 t-20 3");
+//   });
+
+// grid + shape + transforms
+// TODO: nicer syntax, don't muck about with .transform and injection of coordinates
+// instead the "repeater" could have methods to rotate, etc and optionally a more freeform delegate to trnasform()
+start()
+  .grid(8, 8, 60, 87)
+  .do((c) => {
+    s.path(triangle(40, 80, 80).pathSpec)
+      .attr({ stroke: "#8d3d4d" })
+      .transform(`T${c.x} ${c.y}`)
+      .clone()
+      // .transform("r180 t-30 0").transform(`T${c.x -30} ${c.y}`)
+      .transform(`r180 T${c.x - 30} ${c.y}`);
+  });
