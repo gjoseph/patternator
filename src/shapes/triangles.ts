@@ -24,6 +24,9 @@ export interface Triangle extends Shape {
  * If 1 parameter is given, returns an equilateral triangle. If 2 parameters are given, returns a right angle triangle,
  * where the hypotenuse is derived from the given a and b side lengths.
  * The triangle will be drawn such that points a and b are on the same x-axis and point c is drawn below on the y-axis.
+ *
+ * TODO: for some reason i'm insistent that triange point A is first, and so is side A, which makes it hard to known which is which
+ * in most docs i see, point and angle "A" are OPPOSITE side a
  */
 export const triangle = (
   lengthSideA: number,
@@ -37,23 +40,23 @@ export const triangle = (
   }
 
   const a = { x: 0, y: 0 };
-  const b = { x: lengthSideC, y: 0 };
+  const b = { x: lengthSideA, y: 0 };
   // https://math.stackexchange.com/questions/2480560/computing-coordinates-of-vertices-in-a-sss-triangle
   // This is also apply law of cosines, but isn't applying cos-1 to it!?
-  const cX = lengthSideB * (sq(lengthSideB) + sq(lengthSideC) - sq(lengthSideA)) / (2 * lengthSideB * lengthSideC);
+  const cX = round(
+    (lengthSideC * (sq(lengthSideC) + sq(lengthSideA) - sq(lengthSideB))) /
+      (2 * lengthSideC * lengthSideA)
+  );
   const c = {
     x: cX,
-    y: Math.sqrt(sq(lengthSideB)-sq(cX))
-  }
-
-  const triangle = {
+    y: round(Math.sqrt(sq(lengthSideC) - sq(cX))),
+  };
+  return {
     points: { a, b, c },
     sides: { a: lengthSideA, b: lengthSideB, c: lengthSideC },
     angles: findAnglesFromSides(lengthSideA, lengthSideB, lengthSideC),
-    pathSpec: `M0 0, L${lengthSideC} 0, L${c.x} ${c.y}, L0 0`,
+    pathSpec: `M0 0, L${b.x} ${b.y}, L${c.x} ${c.y}, L0 0`,
   };
-  console.log("triangle:", triangle);
-  return triangle;
 };
 
 /*
@@ -69,8 +72,8 @@ const findAnglesFromSides = (a: number, b: number, c: number) => {
     bc: angleBetween(b, c, a),
     ac: angleBetween(a, c, b),
   };
-  // The sum has a bit of a rounding issue that may be fixed by the usage of toFixed() in angleBetween()
-  const sumAngles = angles.ab + angles.bc + angles.ac;
+  // The sum still has a bit of a rounding issue  (e.g triangle(100, 140, 140) gives us a sum of 180.01
+  const sumAngles = round(angles.ab + angles.bc + angles.ac, 1);
   if (sumAngles !== 180) {
     throw new Error(`WTF law of cosines is broken (sum is ${sumAngles})`);
   }

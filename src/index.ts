@@ -185,4 +185,6 @@ s.group(
 
 // Shapes:
 s.path(rectangle(30, 40).pathSpec).transform("t 100 100")
-s.path(triangle(100, 140).pathSpec).transform("t 200 200")
+s.path(triangle(100).pathSpec).transform("t 200 200")
+s.path(triangle(100, 140).pathSpec).transform("t 400 200")
+s.path(triangle(100, 140, 140).pathSpec).transform("t 200 400")
