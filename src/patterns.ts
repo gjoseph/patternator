@@ -7,14 +7,15 @@ import {
 } from "./coords";
 import { Producer, Producers } from "./producers";
 
-export namespace Patterns {
-  export const center = () => {
-    throw Error("not implemented yet");
-  }; // TODO
+// TODO locations to be replaced by points on the enclosing shape
+export const center = () => {
+  throw Error("not implemented yet");
+}; // TODO
 
-  export const zero = () => ({ x: 0, y: 0 });
-  /** @deprecated */
-  export const start = () => startAt(zero());
+// TODO locations to be replaced by points on the enclosing shape
+export const zero = () => ({ x: 0, y: 0 });
+
+export namespace Patterns {
   export const startAt = (coords: NumberOrFunctionCoords) => {
     return new Initial(unwrap(coords));
   };

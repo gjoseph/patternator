@@ -1,7 +1,6 @@
 import { addCoords, Coords } from "../coords";
-import { Patterns } from "../patterns";
+import { Patterns, zero } from "../patterns";
 import { Producers } from "../producers";
-import zero = Patterns.zero;
 
 export const gridBuilder = (initialCoords: Coords = zero()) =>
   new GridBuilder(initialCoords);
