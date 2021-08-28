@@ -1,11 +1,11 @@
 import Snap from "snapsvg";
 import { Coords, equalCoords } from "./coords";
 import { Patterns } from "./patterns";
+import { gridBuilder } from "./patterns/grids";
 import { Producers } from "./producers";
 import { rectangle } from "./shapes/rectangle";
 import { triangle } from "./shapes/triangles";
 import { cone, cup, cylinder, DevelopedVolume } from "./volumes";
-import start = Patterns.start;
 import startAt = Patterns.startAt;
 import dec = Producers.dec;
 import inc = Producers.inc;
@@ -127,17 +127,19 @@ startAt({ x: rnd(200), y: rnd(200) })
   .do(circle("#933", "#99c"));
 
 // a small grid of dots
-startAt({ x: 5, y: 0 }).gridUntil({ x: 500, y: 500 }, 120, 72).do(dot());
-start().grid(50, 50, 10).do(dot());
+gridBuilder({ x: 5, y: 0 }).gridUntil({ x: 500, y: 500 }, 120, 72).do(dot());
+gridBuilder().grid(50, 50, 10).do(dot());
 
 // alternating grids
 const oppositeCorner = { x: MAX_X, y: MAX_Y };
-startAt({ x: 0, y: 60 }).gridUntil(oppositeCorner, 120, 72).do(dot("red"));
-startAt({ x: 60, y: 24 }).gridUntil(oppositeCorner, 120, 72).do(dot("green"));
+gridBuilder({ x: 0, y: 60 }).gridUntil(oppositeCorner, 120, 72).do(dot("red"));
+gridBuilder({ x: 60, y: 24 })
+  .gridUntil(oppositeCorner, 120, 72)
+  .do(dot("green"));
 
 // a grid where spacing is adjusted based on size and nr of items
 s.rect(0, 0, 1000, 600).attr({ stroke: "#000", strokeWidth: 4 });
-start().gridToFit(10, 10, { x: 1000, y: 600 }).do(dot());
+gridBuilder().gridToFit(10, 10, { x: 1000, y: 600 }).do(dot());
 
 // Polygons
 s.circle(100, 100, 80);
@@ -225,7 +227,7 @@ s.polygon([240, 230, 260, 260, 220, 260]).transform(`rotate(180 200 200 )`);
 s.polygon([240, 230, 260, 260, 220, 260]).transform(`rotate(1turn )`);
 
 // grid + native polygon:
-// start()
+// gridBuilder()
 //   .grid(8, 8, 40, 40)
 //   .do((c) => {
 //     s.polygon([c.x + 40, c.y + 30, c.x + 50, c.y + 60, c.x + 30, c.y + 60])
@@ -237,7 +239,7 @@ s.polygon([240, 230, 260, 260, 220, 260]).transform(`rotate(1turn )`);
 // grid + shape + transforms
 // TODO: nicer syntax, don't muck about with .transform and injection of coordinates
 // instead the "repeater" could have methods to rotate, etc and optionally a more freeform delegate to trnasform()
-start()
+gridBuilder()
   .grid(8, 8, 60, 87)
   .do((c) => {
     s.path(triangle(40, 80, 80).pathSpec)

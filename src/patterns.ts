@@ -12,7 +12,9 @@ export namespace Patterns {
     throw Error("not implemented yet");
   }; // TODO
 
-  export const start = () => startAt({ x: 0, y: 0 });
+  export const zero = () => ({ x: 0, y: 0 });
+  /** @deprecated */
+  export const start = () => startAt(zero());
   export const startAt = (coords: NumberOrFunctionCoords) => {
     return new Initial(unwrap(coords));
   };
@@ -26,45 +28,6 @@ export namespace Patterns {
     ): FixedLengthRepetition {
       return new FixedLengthRepetition(
         Producers.transpose(this.initialCoords, transposition)
-      );
-    }
-
-    grid(
-      horizontalItems: number,
-      verticalItems: number,
-      gridSpacing: number,
-      gridSpacingY: number = gridSpacing
-    ) {
-      const oppositeCorner = addCoords(this.initialCoords, {
-        x: (horizontalItems - 1) * gridSpacing,
-        y: (verticalItems - 1) * gridSpacingY,
-      });
-      return this.gridUntil(oppositeCorner, gridSpacing, gridSpacingY);
-    }
-
-    gridToFit(
-      horizontalItems: number,
-      verticalItems: number,
-      totalSize: Coords
-    ) {
-      const oppositeCorner = addCoords(this.initialCoords, totalSize);
-      // TODO do we actually need/want rounding here ?
-      const gridSpacingX = Math.floor(totalSize.x / (horizontalItems - 1));
-      const gridSpacingY = Math.floor(totalSize.y / (verticalItems - 1));
-      return this.gridUntil(oppositeCorner, gridSpacingX, gridSpacingY);
-    }
-
-    gridUntil(
-      oppositeCorner: Coords,
-      gridSpacing: number,
-      gridSpacingY: number = gridSpacing
-    ) {
-      // console.debug("GRID: ", { initialCorner: this.initialCoords, oppositeCorner, gridSpacing, gridSpacingY });
-      return new BoundedRepetition(
-        Producers.grid(this.initialCoords, oppositeCorner, {
-          x: gridSpacing,
-          y: gridSpacingY,
-        })
       );
     }
 
@@ -84,10 +47,9 @@ export namespace Patterns {
         repeats
       );
     }
-
   }
 
-  abstract class Repetition {
+  export abstract class Repetition {
     abstract hasMore(): boolean;
 
     abstract poll(): Coords;
@@ -144,7 +106,7 @@ export namespace Patterns {
   /**
    * A repetition that stops when the Producers returns null or undefined (TODO pick a lane)
    */
-  class BoundedRepetition extends Repetition {
+  export class BoundedRepetition extends Repetition {
     protected nextCoords: Coords | undefined = undefined; // state
     constructor(readonly coordsProducer: Producer<Coords | undefined>) {
       super();

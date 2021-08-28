@@ -12,10 +12,12 @@ export interface Shape {
 }
 
 export const toPathSpec = (coords: Coords[]): string => {
-  return coords
-    // Add first coord as last so we close the shape
-    .concat(coords[0])
-    // Move to first coord, then draw lines to all others
-    .map((c, i) => (i === 0 ? "M" : "L") + c.x + " " + c.y)
-    .join(" ");
+  return (
+    coords
+      // Add first coord as last so we close the shape
+      .concat(coords[0])
+      // Move to first coord, then draw lines to all others
+      .map((c, i) => (i === 0 ? "M" : "L") + c.x + " " + c.y)
+      .join(" ")
+  );
 };
