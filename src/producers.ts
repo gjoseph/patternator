@@ -11,6 +11,7 @@ import {
   NumberOrFunctionOptCoords,
   unwrapOpt,
 } from "./coords";
+import { randomNumber } from "./misc";
 
 export interface Producer<T> {
   next(): T;
@@ -22,6 +23,7 @@ export namespace Producers {
   export const yoyo = <T>(values: T[]) => new Yoyo(values, false);
   export const upThenDown = <T>(values: T[]) => new Yoyo(values, true);
   export const randomOrder = <T>(values: T[]) => new RandomOrder(values);
+  export const listThenStop = <T>(values: T[]) => new ListProducer(values);
 
   // Number Producers
   export const inc = (seed: number, step = 1) =>
@@ -38,10 +40,31 @@ export namespace Producers {
     new FuncProducer(seed, (prev) => addCoords(prev, unwrapOpt(step)));
   export const grid = (first: Coords, opposite: Coords, spacing: Coords) =>
     gridProducer(first, opposite, spacing);
+
+  // TODO producer that produces on a curve (e.g curve of the bottom of the cup/annulus)
 }
 
-const randomNumber = (max: number) => Math.floor(Math.random() * max);
+/**
+ * Produces the values of the array once only; throws an error if attempting to go further.
+ */
+class ListProducer<T> implements Producer<T> {
+  private i: number = 0;
 
+  constructor(readonly values: T[]) {}
+
+  next(): T {
+    if (this.i >= this.values.length) {
+      throw new Error(
+        `There are only ${this.values.length} values available for this producer.`
+      );
+    }
+    return this.values[this.i++];
+  }
+}
+
+/**
+ * Produces the values of the array in an infinite loop.
+ */
 class Ring<T> implements Producer<T> {
   private i = -1;
 
@@ -53,6 +76,10 @@ class Ring<T> implements Producer<T> {
   }
 }
 
+/**
+ * Produces the values of the array traversing forwards then backwards;
+ * `repeatEnds` controls whether the boundaries are repeated when switching directions..
+ */
 class Yoyo<T> implements Producer<T> {
   private i = 0;
   private forward = true;

@@ -1,9 +1,12 @@
-import Snap from "snapsvg";
-import { Coords, equalCoords } from "./coords";
+import Snap, { rgb } from "snapsvg";
+import { addCoords, Coords, equalCoords } from "./coords";
+import { randomNumber } from "./misc";
 import { Patterns } from "./patterns";
 import { gridBuilder } from "./patterns/grids";
 import { Producers } from "./producers";
 import { rectangle } from "./shapes/rectangle";
+import { Polygons } from "./shapes/regular-polygons";
+import { Shape } from "./shapes/shape";
 import { triangle } from "./shapes/triangles";
 import { cone, cup, cylinder, DevelopedVolume } from "./volumes";
 import startAt = Patterns.startAt;
@@ -89,6 +92,13 @@ const dot =
     });
   };
 
+const sqr =
+  (color: string = "#444") =>
+  (coords: Coords) =>
+    s
+      .rect(coords.x - 2, coords.y - 2, 4, 4)
+      .attr({ fill: color, stroke: "none" });
+
 const circle =
   (stroke = "#933", fill = "none") =>
   (coords: Coords) => {
@@ -114,6 +124,12 @@ const text = (text: string) => (c: Coords) => {
   });
 };
 
+const randomColor = () => {
+  const rgb1 = rgb(randomNumber(256), randomNumber(256), randomNumber(256));
+  // console.log("rgb1:", rgb1);
+  return rgb1.toString(); //.hex;
+};
+
 // a diagonal of large dots
 startAt({ x: 50, y: 50 })
   .transposeBy({ x: 50, y: 20 })
@@ -131,7 +147,7 @@ gridBuilder({ x: 5, y: 0 }).gridUntil({ x: 500, y: 500 }, 120, 72).do(dot());
 gridBuilder().grid(50, 50, 10).do(dot());
 
 // alternating grids
-const oppositeCorner = { x: MAX_X, y: MAX_Y };
+const oppositeCorner = { x: 1500, y: 800 };
 gridBuilder({ x: 0, y: 60 }).gridUntil(oppositeCorner, 120, 72).do(dot("red"));
 gridBuilder({ x: 60, y: 24 })
   .gridUntil(oppositeCorner, 120, 72)
@@ -144,23 +160,25 @@ gridBuilder().gridToFit(10, 10, { x: 1000, y: 600 }).do(dot());
 // Polygons
 s.circle(100, 100, 80);
 startAt({ x: 100, y: 100 })
-  .onCircle(3, 160)
+  .onPolygon(Polygons.byOuterRadius(3, 160))
   .do(circleBlackOr({ x: 105, y: 180 }, "#393"));
 startAt({ x: 300, y: 200 })
-  .onCircle(8, 100)
+  .onPolygon(Polygons.byOuterRadius(8, 100))
   .do(circleBlackOr({ x: 300, y: 250 }, "#935"));
 startAt({ x: 105, y: 300 })
-  .onCircle(5, 200)
+  .onPolygon(Polygons.byOuterRadius(5, 200))
   .do(circleBlackOr({ x: 105, y: 400 }, "#359"));
 startAt({ x: 300, y: 200 })
-  .onCircle(9, 100)
+  .onPolygon(Polygons.byOuterRadius(9, 100))
   .do(circleBlackOr({ x: 300, y: 250 }, "pink"));
 
-startAt({ x: 400, y: 100 }).onCircle(20, 100).do(circle("#a39032"));
+startAt({ x: 400, y: 100 })
+  .onPolygon(Polygons.byOuterRadius(20, 100))
+  .do(circle("#a39032"));
 
 s.circle(400, 400, 80);
 startAt({ x: 400, y: 400 })
-  .onCircle(4, 160)
+  .onPolygon(Polygons.byOuterRadius(4, 160))
   .do(circleBlackOr({ x: 105, y: 180 }, "#393"));
 
 const textAttr = {
@@ -249,3 +267,80 @@ gridBuilder()
       // .transform("r180 t-30 0").transform(`T${c.x -30} ${c.y}`)
       .transform(`r180 T${c.x - 30} ${c.y}`);
   });
+
+s.path(triangle(40, 80, 80).pathSpec)
+  .attr({ stroke: "#8d3d4d" })
+  // .transform(`T${c.x} ${c.y}`)
+  .clone()
+  .transform("r180 t-30 0");
+// .transform(`T${c.x -30} ${c.y}`)
+// .transform(`r180 T${c.x - 30} ${c.y}`);
+
+// TODO: INNER OUTER STROKES --> MOVE THIS TO UTILITY
+// https://alexwlchan.net/2021/03/inner-outer-strokes-svg/
+const tm = s.polygon([0, 20, 30, 0, 60, 20, 30, 40]).toDefs();
+const bl = s.polygon([0, 20, 30, 40, 30, 60, 0, 40]).toDefs();
+const br = s.polygon([30, 40, 60, 20, 60, 40, 30, 60]).toDefs();
+const thingo = s
+  .group(
+    (s.use(tm) as Snap.Element)
+      .attr({ clipPath: tm, strokeWidth: 6, stroke: "#777" })
+      .toDefs(),
+    (s.use(bl) as Snap.Element)
+      .attr({ clipPath: bl, strokeWidth: 6, stroke: "#444" })
+      .toDefs(),
+    (s.use(br) as Snap.Element)
+      .attr({ clipPath: br, strokeWidth: 6, stroke: "#555" })
+      .toDefs()
+  )
+  .toDefs();
+const placeThingo = (c: Coords) =>
+  (s.use(thingo) as Snap.Element).transform(`T${c.x} ${c.y}`);
+
+// startAt({ x: 0, y: -40 }).gridUntil(oppositeCorner, 60, 80).do(placeThingo);
+// startAt({ x: -30, y: 0 }).gridUntil(oppositeCorner, 60, 80).do(placeThingo);
+// END NICE QBERT PATTERN
+
+// DRAW SHAPES -- somewhat redundant/duplicate with some of the patterns.ts/Producers code!!
+const draw = (shape: Shape) => s.path(shape.pathSpec);
+
+const tri = draw(triangle(100)).transform("t 100 100");
+const box = tri.getBBox();
+console.log("tri.getBBox():", box);
+s.circle(box.cx, box.cy, box.r0).attr({ stroke: "#9821ed" });
+s.circle(box.cx, box.cy, box.r1).attr({ stroke: "#234364" });
+s.circle(box.cx, box.cy, box.r2).attr({ stroke: "#3d89ed" });
+// stroke: "#9d6ee3"
+//     stroke: "#3e7ed2"
+// stroke: "#e7d390"
+
+draw(rectangle(50, 50)).attr({ stroke: "#21c309" }).transform("t 400 400");
+// draw(Polygons.byInnerRadius(6, 80))
+//   .attr({ stroke: "#e7d390" })
+//   .transform("t 200 200");
+draw(Polygons.byOuterRadius(6, 80))
+  .attr({ stroke: "#3e7ed2" })
+  .transform("t 400 200");
+draw(Polygons.byOuterRadius(4, 80))
+  .attr({ stroke: "#3e7ed2" })
+  .transform("t 400 200");
+// draw(Polygons.bySideLength(6, 80)).attr({ stroke: "#9d6ee3" });
+//   .transform("t 300 300");
+
+// =============== Grid on hex ===============
+const polygonAround = (sides: number) => (center: Coords) =>
+  Polygons.byOuterRadius(sides, 100).vertices.map((c) =>
+    // See Producers.transpose
+    addCoords(c, center)
+  );
+
+const hexAround = () => polygonAround(6);
+
+polygonAround(5)({ x: 410, y: 370 })
+  .flatMap(polygonAround(5))
+  .flatMap(polygonAround(5))
+  .flatMap(polygonAround(5))
+  .map(sqr());
+
+s.rect(408, 368, 4, 4).attr({ fill: "green", stroke: "none" });
+s.rect(10, 10, 820, 730).attr({ fill: "none", stroke: "green" });

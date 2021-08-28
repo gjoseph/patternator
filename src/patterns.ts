@@ -6,6 +6,7 @@ import {
   unwrap,
 } from "./coords";
 import { Producer, Producers } from "./producers";
+import { Polygon } from "./shapes/regular-polygons";
 
 // TODO locations to be replaced by points on the enclosing shape
 export const center = () => {
@@ -32,20 +33,12 @@ export namespace Patterns {
       );
     }
 
-    /**
-     * Places points on vertices of a polygon of N sides.
-     * Starting point is the center of the circumscribed circle
-     */
-    onPolygon(sides: number, sideLength: number) {}
-
-    /**
-     * Equivalent to #onPolygon but places points on an enclosing circles; sides length unknown to user.
-     * Starting point is the center of the circumscribed circle
-     */
-    onCircle(repeats: number, diameter: number) {
-      return new FixedLengthRepetition(
-        new PolygonProducer(this.initialCoords, repeats, diameter / 2),
-        repeats
+    onPolygon(polygon: Polygon) {
+      const values: Coords[] = Object.values(polygon.vertices).map((c) =>
+        addCoords(c, this.initialCoords)
+      );
+      return new FixedLengthRepetition(Producers.listThenStop(values)).times(
+        values.length
       );
     }
   }
@@ -77,9 +70,9 @@ export namespace Patterns {
     private repeats: number; // builder
     private currentIdx = 0; // state
     protected currentCoords: Coords | undefined = undefined; // state
-    constructor(readonly coordsProducer: Producer<Coords>, repeats = 1) {
+    constructor(readonly coordsProducer: Producer<Coords>) {
       super();
-      this.repeats = repeats;
+      this.repeats = 1;
     }
 
     // TODO split out builder/factories from logic/business methods?
@@ -144,6 +137,7 @@ export namespace Patterns {
      */
     private readonly the_const: number;
     private i = 0;
+
     constructor(
       readonly start: Coords,
       readonly sides: number,
