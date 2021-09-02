@@ -20,18 +20,28 @@
     "gts-fix": "gts fix",
     "setup-husky": "npm rebuild husky # much faster than the npm install --save-dev husky documented alternative",
     "prettier-check-all": "prettier --check .",
-    "prettier-fix-all": "prettier --write ."
+    "prettier-fix-all": "prettier --write .",
+    "storybook": "start-storybook -p 6006",
+    "storybook-fix": "start-storybook -p 6006 --no-manager-cache",
+    "build-storybook": "build-storybook"
   },
   "dependencies": {
     "eve": "0.5.4",
     "snapsvg": "0.5.1"
   },
   "devDependencies": {
+    "@babel/core": "7.15.0",
     "@rollup/plugin-commonjs": "20.0.0",
     "@rollup/plugin-node-resolve": "13.0.4",
     "@rollup/plugin-typescript": "8.2.5",
+    "@storybook/addon-actions": "6.3.7",
+    "@storybook/addon-essentials": "6.3.7",
+    "@storybook/addon-links": "6.3.7",
+    "@storybook/addon-storysource": "6.3.7",
+    "@storybook/html": "6.3.7",
     "@types/jest": "26.0.24",
     "@types/snapsvg": "0.5.1",
+    "babel-loader": "8.2.2",
     "gts": "3.1.0",
     "husky": "7.0.1",
     "jest": "27.0.6",
