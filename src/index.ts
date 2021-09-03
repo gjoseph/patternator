@@ -4,9 +4,7 @@ import { randomNumber } from "./misc";
 import { Patterns } from "./patterns";
 import { gridBuilder } from "./patterns/grids";
 import { Producers } from "./producers";
-import { rectangle } from "./shapes/rectangle";
 import { Polygons } from "./shapes/regular-polygons";
-import { Shape } from "./shapes/shape";
 import { triangle } from "./shapes/triangles";
 import { cone, cup, cylinder, DevelopedVolume } from "./volumes";
 import startAt = Patterns.startAt;
@@ -226,12 +224,6 @@ s.group(
   ...debug(cup1, "#393")
 ).transform("t500,250");
 
-// Shapes:
-s.path(rectangle(90, 120).pathSpec).transform("t 100 100");
-s.path(triangle(100).pathSpec).transform("t 200 200");
-s.path(triangle(100, 140).pathSpec).transform("t 400 200");
-s.path(triangle(100, 140, 140).pathSpec).transform("t 200 400");
-
 // TODO: do the following with a nicer syntax and the producers:
 [0, 120, 240].map((a) => {
   s.polygon([40, 30, 60, 60, 20, 60])
@@ -300,32 +292,6 @@ const placeThingo = (c: Coords) =>
 // startAt({ x: 0, y: -40 }).gridUntil(oppositeCorner, 60, 80).do(placeThingo);
 // startAt({ x: -30, y: 0 }).gridUntil(oppositeCorner, 60, 80).do(placeThingo);
 // END NICE QBERT PATTERN
-
-// DRAW SHAPES -- somewhat redundant/duplicate with some of the patterns.ts/Producers code!!
-const draw = (shape: Shape) => s.path(shape.pathSpec);
-
-const tri = draw(triangle(100)).transform("t 100 100");
-const box = tri.getBBox();
-console.log("tri.getBBox():", box);
-s.circle(box.cx, box.cy, box.r0).attr({ stroke: "#9821ed" });
-s.circle(box.cx, box.cy, box.r1).attr({ stroke: "#234364" });
-s.circle(box.cx, box.cy, box.r2).attr({ stroke: "#3d89ed" });
-// stroke: "#9d6ee3"
-//     stroke: "#3e7ed2"
-// stroke: "#e7d390"
-
-draw(rectangle(50, 50)).attr({ stroke: "#21c309" }).transform("t 400 400");
-// draw(Polygons.byInnerRadius(6, 80))
-//   .attr({ stroke: "#e7d390" })
-//   .transform("t 200 200");
-draw(Polygons.byOuterRadius(6, 80))
-  .attr({ stroke: "#3e7ed2" })
-  .transform("t 400 200");
-draw(Polygons.byOuterRadius(4, 80))
-  .attr({ stroke: "#3e7ed2" })
-  .transform("t 400 200");
-// draw(Polygons.bySideLength(6, 80)).attr({ stroke: "#9d6ee3" });
-//   .transform("t 300 300");
 
 // =============== Grid on hex ===============
 const polygonAround = (sides: number) => (center: Coords) =>
