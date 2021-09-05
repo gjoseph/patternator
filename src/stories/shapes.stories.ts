@@ -38,19 +38,11 @@ export const SquareUsingRectangle = makeStory(() => rectangle(50, 50));
 export const EquilateralTriangle = makeStory(() => triangle(100));
 export const RightAngleTriangle = makeStory(() => triangle(100, 50));
 export const IsoscelesTriangle = makeStory(() => triangle(50, 100, 100));
-export const EquilateralTriangleUsingPolygonShape = makeStory(() =>
-  Polygons.byOuterRadius(3, 50)
-);
-export const SquareUsingPolygonShape = makeStory(() =>
-  Polygons.byOuterRadius(4, 50)
-);
-export const Pentagon = makeStory(() => Polygons.byOuterRadius(5, 50));
-export const Hexagon = makeStory(() => Polygons.byOuterRadius(6, 50));
-export const ParametricPolygon = makeStory((args) =>
+export const RegularPolygon = makeStory((args) =>
   Polygons.byOuterRadius(args.sides, 50)
 );
-ParametricPolygon.args = { sides: 4 };
-ParametricPolygon.argTypes = {
+RegularPolygon.args = { sides: 6 };
+RegularPolygon.argTypes = {
   sides: {
     control: { type: "range", min: 3, max: 50, step: 1 },
   },
