@@ -6,6 +6,7 @@ import { rectangle } from "../shapes/rectangle";
 import { Polygons } from "../shapes/regular-polygons";
 import { Shape } from "../shapes/shape";
 import { triangle } from "../shapes/triangles";
+import { angleControl, rangeControl } from "./stories-util";
 
 export default {
   title: "Patternator/Shapes",
@@ -43,16 +44,12 @@ export const RegularPolygon = makeStory((args) =>
 );
 RegularPolygon.args = { sides: 6 };
 RegularPolygon.argTypes = {
-  sides: {
-    control: { type: "range", min: 3, max: 50, step: 1 },
-  },
+  sides: rangeControl(3, 50),
 };
 export const AnnulusSector = makeStory((args) =>
   annulusSector(args.angle, 80, 40)
 );
 AnnulusSector.args = { angle: 60 };
 AnnulusSector.argTypes = {
-  angle: {
-    control: { type: "range", min: 0, max: 360, step: 1 },
-  },
+  angle: angleControl,
 };
