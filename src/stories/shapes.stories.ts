@@ -1,6 +1,5 @@
 import { useEffect } from "@storybook/client-api";
-import { Meta } from "@storybook/html";
-import Snap from "snapsvg";
+import { Args, Meta } from "@storybook/html";
 import { annulusSector } from "../shapes/annulus";
 import { rectangle } from "../shapes/rectangle";
 import { Polygons } from "../shapes/regular-polygons";
@@ -10,28 +9,21 @@ import { angleControl, rangeControl } from "./stories-util";
 
 export default {
   title: "Patternator/Shapes",
-  decorators: [(story) => `<svg id="svgdeco"/><div>${story()}</div>`],
 } as Meta;
 
-// TODO
-// -- avoid all the shenanigans to create Snap etc -- provide this stuff via shared config
-// -- make the svg take all available space
-
-const draw = (shape: Shape, s: Snap.Paper) => s.path(shape.pathSpec);
-
-const makeStory = (makeShape: (args) => Shape) => (args) => {
-  // move all this to a decorator? Including the html snippet?
+const makeStory = (makeShape: (args: Args) => Shape) => (args: Args) => {
   useEffect(() => {
-    // const s = Snap(100,100);// actually this works too, so we don't really need an element...
-    // could the decorator set this up for us instead?
-    const s = Snap("#svgdeco");
-    draw(makeShape(args), s)
+    const shape = makeShape(args);
+    args
+      .getSnap()
+      .path(shape.pathSpec)
       .attr({ fill: "none", strokeWidth: 1, stroke: "#000" })
       .transform("t 50 50");
   }, [args]);
 
-  return ""; // if void, storybook prints "undefined" -- which we could pbly address via the decorator, but if decorator
+  // if void, storybook prints "undefined" -- which we could pbly address via the decorator, but if decorator
   // doesn't invoke story(), well, its useEffect is never invoked either.
+  return "";
 };
 
 export const Rectangle = makeStory(() => rectangle(50, 80));
