@@ -121,31 +121,6 @@ startAt({ x: rnd(200), y: rnd(200) })
   .times(7)
   .do(circle("#933", "#99c"));
 
-// Polygons
-s.circle(100, 100, 80);
-startAt({ x: 100, y: 100 })
-  .onPolygon(Polygons.byOuterRadius(3, 160))
-  .do(circleBlackOr({ x: 105, y: 180 }, "#393"));
-startAt({ x: 300, y: 200 })
-  .onPolygon(Polygons.byOuterRadius(8, 100))
-  .do(circleBlackOr({ x: 300, y: 250 }, "#935"));
-startAt({ x: 105, y: 300 })
-  .onPolygon(Polygons.byOuterRadius(5, 200))
-  .do(circleBlackOr({ x: 105, y: 400 }, "#359"));
-startAt({ x: 300, y: 200 })
-  .onPolygon(Polygons.byOuterRadius(9, 100))
-  .do(circleBlackOr({ x: 300, y: 250 }, "pink"));
-
-startAt({ x: 400, y: 100 })
-  .onPolygon(Polygons.byOuterRadius(20, 100))
-  .do(circle("#a39032"));
-
-s.circle(400, 400, 80);
-startAt({ x: 400, y: 400 })
-  .onPolygon(Polygons.byOuterRadius(4, 160))
-  .do(circleBlackOr({ x: 105, y: 180 }, "#393"));
-
-
 // TODO: do the following with a nicer syntax and the producers:
 [0, 120, 240].map((a) => {
   s.polygon([40, 30, 60, 60, 20, 60])

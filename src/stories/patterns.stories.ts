@@ -4,31 +4,47 @@ import Snap from "snapsvg";
 import { Coords } from "../coords";
 import { Patterns } from "../patterns";
 import { gridBuilder } from "../patterns/grids";
+import { Polygons } from "../shapes/regular-polygons";
+import { rangeControl } from "./stories-util";
 
 export default {
   title: "Patternator/Patterns",
+  args: {
+    drawDebugHelp: false,
+  },
 } as Meta;
 
-const dot = (snap: Snap.Paper) => (coords: Coords) => {
-  snap.circle(coords.x, coords.y, 1).attr({
-    fill: "#444",
-    stroke: "none",
-  });
-};
+const dot =
+  (radius = 1, color = "#444") =>
+  (snap: Snap.Paper) =>
+  (coords: Coords) => {
+    snap.circle(coords.x, coords.y, radius).attr({
+      fill: color,
+      stroke: color,
+    });
+  };
 
-const makeStory =
-  (makePattern: (args: Args) => Patterns.Repetition): Story =>
-  (args: Args) => {
+const makeStory = (
+  makePattern: (args: Args) => Patterns.Repetition,
+  doOnPattern: (snap: Snap.Paper) => (coords: Coords) => void = dot(),
+  drawDebug: (snap: Snap.Paper, args: Args) => void = () => {}
+): Story => {
+  return (args: Args) => {
     useEffect(() => {
       const pattern = makePattern(args);
-      const dotFunction = dot(args.getSnap());
-      pattern.do(dotFunction);
+      const snap = args.getSnap();
+      const doFunction = doOnPattern(snap);
+      pattern.do(doFunction);
+      if (args.drawDebugHelp) {
+        drawDebug(snap.attr({ stroke: "red" }), args);
+      }
     }, [args]);
 
     // if void, storybook prints "undefined" -- which we could pbly address via the decorator, but if decorator
     // doesn't invoke story(), well, its useEffect is never invoked either.
     return "";
   };
+};
 
 // TODO use args for coordinates and spacing
 export const SimpleGrid = makeStory(() =>
@@ -51,3 +67,20 @@ export const AutomaticSpacingGrid = makeStory(() =>
 // gridBuilder({ x: 60, y: 24 })
 //   .gridUntil(oppositeCorner, 120, 72)
 //   .do(dot("green"));
+
+export const OnPolygonByOuterRadius = makeStory(
+  (args) =>
+    // TODO start in center?
+    Patterns.startAt({ x: 300, y: 300 }).onPolygon(
+      Polygons.byOuterRadius(args.sides, args.radius)
+    ),
+  dot(5, "#935"),
+  (snap, args) => {
+    snap.circle(300, 300, args.radius);
+  }
+);
+OnPolygonByOuterRadius.args = { sides: 6, radius: 100 };
+OnPolygonByOuterRadius.argTypes = {
+  sides: rangeControl(3, 20),
+  radius: rangeControl(300),
+};
