@@ -57,8 +57,4 @@ export class ConeFrustum implements DevelopedVolume<AnnulusSector> {
     }
     this.description = `Frustum(dTop: ${this.truncDiameter}, dBottom: ${baseDiameter}, h: ${this.height} (slantHeight: ${this.slantHeight}))`;
   }
-  //
-  // developOn(paper: Snap.Paper): Snap.Element {
-  //   return paper.path(this.developed.pathSpec);
-  // }
 }
