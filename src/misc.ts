@@ -1,6 +1,20 @@
 // What a great file name... just not sure where to put this for now.
 export type AngleInDegrees = number; // https://github.com/Microsoft/TypeScript/issues/15480 https://github.com/microsoft/TypeScript/issues/43505
 
+export const radToDeg = (r: number) => (r * 180) / Math.PI;
+export const sq = (n: number) => Math.pow(n, 2);
+
+/**
+ * Working around the floating math rounding problems... maybe.
+ * https://www.jacklmoore.com/notes/rounding-in-javascript/ didn't work with already complex numbers
+ * .toFixed(2) would return a string
+ */
+export const round = (value: number, decimals = 2) => {
+  // return Number(Math.round(Number(value + "e" + decimals)) + "e-" + decimals);
+  const base = Math.pow(10, decimals);
+  return Number(Math.round(Number(value * base)) / base);
+};
+
 /**
  * Returns a random integer between 0 and `max` (exclusive).
  */

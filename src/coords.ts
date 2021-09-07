@@ -65,3 +65,21 @@ export const equalCoords = (
   const ub = unwrapOpt(b);
   return ua.x === ub.x && ua.y === ub.y;
 };
+
+export const isInside = (
+  c: Coords,
+  topLeft: Coords,
+  bottomRight: Coords
+): boolean => {
+  if (topLeft.x >= bottomRight.x || topLeft.y >= bottomRight.y) {
+    throw new Error(
+      `Invalid corners; topLeft (${topLeft}) should be .. top .. left, moreso than bottomRight (${bottomRight}).`
+    );
+  }
+  return (
+    topLeft.x <= c.x &&
+    c.x <= bottomRight.x &&
+    topLeft.y <= c.y &&
+    c.y <= bottomRight.y
+  );
+};
