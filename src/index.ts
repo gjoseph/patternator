@@ -80,15 +80,6 @@ s.polygon([203.324, 10, 235.324, 32, 336.676, 32, 304.676, 20]).attr({
 // lines(9, 3 , 60);
 // lines(10, 3 , 60);
 
-const dot =
-  (color: string = "#444") =>
-  (coords: Coords) => {
-    s.circle(coords.x, coords.y, 1).attr({
-      fill: color,
-      stroke: "none",
-    });
-  };
-
 const sqr =
   (color: string = "#444") =>
   (coords: Coords) =>
@@ -112,15 +103,6 @@ const circleBlackOr =
     circle(color)(c);
   };
 
-const text = (text: string) => (c: Coords) => {
-  s.text(c.x, c.y, text).attr({
-    stroke: "none",
-    fill: "#333",
-    textAnchor: "middle",
-    alignmentBaseline: "hanging",
-  });
-};
-
 const randomColor = () => {
   const rgb1 = rgb(randomNumber(256), randomNumber(256), randomNumber(256));
   // console.log("rgb1:", rgb1);
@@ -138,21 +120,6 @@ startAt({ x: rnd(200), y: rnd(200) })
   .transposeBy({ x: inc(3), y: dec(10) })
   .times(7)
   .do(circle("#933", "#99c"));
-
-// a small grid of dots
-gridBuilder({ x: 5, y: 0 }).gridUntil({ x: 500, y: 500 }, 120, 72).do(dot());
-gridBuilder().grid(50, 50, 10).do(dot());
-
-// alternating grids
-const oppositeCorner = { x: 1500, y: 800 };
-gridBuilder({ x: 0, y: 60 }).gridUntil(oppositeCorner, 120, 72).do(dot("red"));
-gridBuilder({ x: 60, y: 24 })
-  .gridUntil(oppositeCorner, 120, 72)
-  .do(dot("green"));
-
-// a grid where spacing is adjusted based on size and nr of items
-s.rect(0, 0, 1000, 600).attr({ stroke: "#000", strokeWidth: 4 });
-gridBuilder().gridToFit(10, 10, { x: 1000, y: 600 }).do(dot());
 
 // Polygons
 s.circle(100, 100, 80);
