@@ -1,5 +1,5 @@
 import { useEffect } from "@storybook/client-api";
-import { Args, Meta } from "@storybook/html";
+import { Args, Meta, Story } from "@storybook/html";
 import { annulusSector } from "../shapes/annulus";
 import { rectangle } from "../shapes/rectangle";
 import { Polygons } from "../shapes/regular-polygons";
@@ -11,7 +11,7 @@ export default {
   title: "Patternator/Shapes",
 } as Meta;
 
-const makeStory = (makeShape: (args: Args) => Shape) => (args: Args) => {
+const makeStory = (makeShape: (args: Args) => Shape): Story => (args: Args) => {
   useEffect(() => {
     const shape = makeShape(args);
     args
