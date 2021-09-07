@@ -16,4 +16,9 @@ module.exports = {
     };
     return config;
   },
+  // https://github.com/storybookjs/storybook/issues/13834
+  babel: async (options) => ({
+    ...options,
+    plugins: ["@babel/plugin-transform-typescript", ...options.plugins],
+  }),
 };
