@@ -46,19 +46,65 @@ const makeStory = (
   };
 };
 
-// TODO use args for coordinates and spacing
-export const SimpleGrid = makeStory(() =>
-  gridBuilder({ x: 5, y: 5 }).gridUntil({ x: 500, y: 500 }, 30, 30)
+export const GridUntil = makeStory(
+  (args) =>
+    gridBuilder({ x: args.initial.x, y: args.initial.y }).gridUntil(
+      {
+        x: args.opposite.x,
+        y: args.opposite.y,
+      },
+      args.gridSpacingX,
+      args.gridSpacingY
+    ),
+  dot(),
+  (snap, args) =>
+    snap.rect(args.initial.x, args.initial.y, args.opposite.x, args.opposite.y)
 );
+GridUntil.args = {
+  initial: { x: 5, y: 5 },
+  opposite: { x: 200, y: 200 },
+  gridSpacingX: 30,
+  gridSpacingY: 30,
+};
 
-export const GridByItemCount = makeStory(() => gridBuilder().grid(50, 50, 10));
+export const GridByItemCount = makeStory((args) =>
+  gridBuilder().grid(args.horizontalItems, args.verticalItems, args.gridSpacing)
+);
+GridByItemCount.args = {
+  horizontalItems: 50,
+  verticalItems: 50,
+  gridSpacing: 50,
+};
+// Couldn't get an optional arg to work (storybook would hang/crash when clicking "set value"), so here goes a separate story
+export const GridByItemCountWithYSpacing = makeStory((args) =>
+  gridBuilder().grid(
+    args.horizontalItems,
+    args.verticalItems,
+    args.gridSpacing,
+    args.gridSpacingY
+  )
+);
+GridByItemCountWithYSpacing.args = {
+  ...GridByItemCount.args,
+  gridSpacingY: 20,
+};
 
 /**
  * a grid where spacing is adjusted based on size and nr of items
  */
-export const AutomaticSpacingGrid = makeStory(() =>
-  gridBuilder().gridToFit(10, 10, { x: 500, y: 500 })
+export const AutomaticSpacingGrid = makeStory(
+  (args) =>
+    gridBuilder().gridToFit(args.horizontalItems, args.verticalItems, {
+      x: 500,
+      y: 500,
+    }),
+  dot(),
+  (snap) => snap.rect(0, 0, 500, 500)
 );
+AutomaticSpacingGrid.args = {
+  horizontalItems: 50,
+  verticalItems: 50,
+};
 
 // This is simply two grids super-imposed -- TODO CompositeRepetition
 // const oppositeCorner = { x: 1500, y: 800 };
