@@ -21,9 +21,17 @@ export const decorators = [
     //   // const [globals, _] = useGlobals();
     //   // const getSnap = globals.getSnap;
     // ... using args makes this accessible within useEffect() and simply less verbose
-    context.args.getSnap = () => Snap("#svg");
-    return `<svg id="svg" style="border: 1px solid #000; box-shadow: 5px 5px #666;
-                                       width: calc(100vw - 32px); height: calc(100vh - 32px);"/>
+    context.args.getSnap = () => {
+      // default black stroke and no fill, to avoid verbosity
+      return Snap("#svg").attr({ fill: "none", stroke: "black" });
+    };
+    // Arbitrary 1200x600 viewBox -- allows us to position center, in combination with preserveAspectRatio (which is explicitly set to defaults)
+    // https://www.w3.org/TR/SVG2/coords.html#ViewBoxAttribute
+    return `<svg id="svg"
+                 viewBox="0 0 1200 600"
+                 preserveAspectRatio="xMidYMid meet"
+                 style="border: 1px solid #000; box-shadow: 5px 5px #666;
+                        width: calc(100vw - 32px); height: calc(100vh - 32px);"/>
       <div>${story()}</div>`;
   },
-]
+];
