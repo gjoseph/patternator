@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "engines": {
     "node": "14.17.6",
-    "npm": "7.6.3"
+    "npm": "7.23.0"
   },
   "files": [
     "dist/"
