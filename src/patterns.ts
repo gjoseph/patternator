@@ -63,7 +63,9 @@ export namespace Patterns {
     /**
      * A more human-friendly name for map(); does not return the results of `fun`.
      */
-    do = this.map;
+    do<T>(fun: (coords: Coords) => T): void {
+      this.map(fun);
+    }
   }
 
   class FixedLengthRepetition extends Repetition {
