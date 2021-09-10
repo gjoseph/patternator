@@ -51,7 +51,7 @@ const textAttr = {
   stroke: "none",
   fill: "#333",
   fontFamily: "Spot Mono",
-  textAnchor: "left",
+  textAnchor: "start",
   alignmentBaseline: "hanging",
 };
 const redText = { ...textAttr, fill: "#943" };
