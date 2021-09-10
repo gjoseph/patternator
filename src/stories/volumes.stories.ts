@@ -1,7 +1,7 @@
-import { useEffect } from "@storybook/client-api";
 import { Args, Meta, Story } from "@storybook/html";
 import Snap from "snapsvg";
 import { cone, cup, cylinder, DevelopedVolume } from "../volumes";
+import { makeStoryWithSnap } from "./stories-util";
 
 export default {
   title: "Patternator/Volumes",
@@ -10,21 +10,18 @@ export default {
   },
 } as Meta;
 
-const makeStory =
-  (makeVolume: (args: Args) => DevelopedVolume<any>): Story =>
-  (args: Args) => {
-    useEffect(() => {
+const makeStory = (makeVolume: (args: Args) => DevelopedVolume<any>): Story => {
+  return makeStoryWithSnap(
+    (snap, args) => {
       const dev = makeVolume(args);
-      const snap = args.getSnap();
-      const path = snap.path(dev.developed.pathSpec);
-      const debug = drawDebug(args.drawDebugHelp, snap, dev);
-      snap.group(path, debug).transform("t 200 50");
-    }, [args]);
-
-    // if void, storybook prints "undefined" -- which we could pbly address via the decorator, but if decorator
-    // doesn't invoke story(), well, its useEffect is never invoked either.
-    return "";
-  };
+      snap.path(dev.developed.pathSpec).transform("t 200 50");
+      return dev;
+    },
+    (dev, snap, args) => {
+      drawDebug(args.drawDebugHelp, snap, dev).transform("t 200 50");
+    }
+  );
+};
 
 export const Cylinder = makeStory((args) => cylinder(100, 180));
 export const Cone = makeStory((args) => cone(100, 180));
