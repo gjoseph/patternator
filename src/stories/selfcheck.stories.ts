@@ -6,7 +6,7 @@ export default {
   title: "SelfCheck",
 } as Meta;
 
-export const ViewboxText = (args: Args) => {
+export const ViewboxCheck = (args: Args) => {
   useEffect(() => {
     const snap: Snap.Paper = args.getSnap();
     const viewBox = snap.attr("viewBox");
