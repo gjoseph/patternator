@@ -1,8 +1,10 @@
 import { Meta } from "@storybook/html";
-import Snap from "snapsvg";
-import { addCoords, Coords } from "../coords";
+import Snap, { rgb } from "snapsvg";
+import { Coords } from "../coords";
+import { randomNumber } from "../misc";
 import { Patterns } from "../patterns";
 import { gridBuilder } from "../patterns/grids";
+import { overlappingHexBuilder } from "../patterns/hexes";
 import { Producers } from "../producers";
 import { Polygons } from "../shapes/regular-polygons";
 import { triangle } from "../shapes/triangles";
@@ -105,25 +107,24 @@ export const QBertCubes = makeStoryWithSnap((s, args) => {
     .do(placeThingo);
 });
 
-export const GridOnHex = makeStoryWithSnap((s, args) => {
-  // TODO this is completely inefficient
-  const polygonAround = (sides: number) => (center: Coords) =>
-    Polygons.byOuterRadius(sides, 100).vertices.map((c) =>
-      // See Producers.transpose
-      addCoords(c, center)
-    );
+export const OverlappingHexesGrid = makeStoryWithSnap((s, args) => {
+  overlappingHexBuilder()
+    .hexesUntil({ x: 400, y: 400 }, 50)
+    .do((c) => {
+      s.path(Polygons.byOuterRadius(6, 50).pathSpec)
+        .attr({ fill: "none", stroke: "black", strokeWidth: 1 })
+        .transform(`T${c.x} ${c.y}`);
+    });
+});
 
-  polygonAround(6)({ x: 410, y: 370 })
-    .flatMap(polygonAround(6))
-    .flatMap(polygonAround(6))
-    .flatMap(polygonAround(6))
-    .map(sqr(s));
-
-  // center point:
-  s.rect(408, 368, 4, 4).attr({ fill: "green", stroke: "none" });
-
-  // top left corner?
-  s.rect(10, 10, 820, 730).attr({ fill: "none", stroke: "green" });
+export const HalfSizeHexesGridRandomColor = makeStoryWithSnap((s, args) => {
+  overlappingHexBuilder()
+    .hexesUntil({ x: 400, y: 400 }, 50)
+    .do((c) => {
+      s.path(Polygons.byOuterRadius(6, 25).pathSpec)
+        .attr({ fill: randomColor(), stroke: "none", strokeWidth: 1 })
+        .transform(`T${c.x} ${c.y}`);
+    });
 });
 
 export const LinesPatternsAreWack = makeStoryWithSnap((s, args) => {
@@ -195,3 +196,11 @@ const sqr = (snap: Snap.Paper) => (coords: Coords) =>
   snap
     .rect(coords.x - 2, coords.y - 2, 4, 4)
     .attr({ fill: "#444", stroke: "none" });
+
+const randomColor = () => {
+  return rgb(
+    randomNumber(256),
+    randomNumber(256),
+    randomNumber(256)
+  ).toString();
+};
