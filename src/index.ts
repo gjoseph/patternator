@@ -1,19 +1,6 @@
-import Snap, { rgb } from "snapsvg";
-import { randomNumber } from "./misc";
-import { Polygons } from "./shapes/regular-polygons";
+import Snap from "snapsvg";
 
 const s = Snap("svg");
-s.attr({
-  fill: "none",
-  stroke: "#3d9",
-  __stroke: "#559",
-  _stroke: "#955",
-  strokeWidth: 3,
-});
+s.text(100, 100, "Nothing for now");
 
-const randomColor = () => {
-  const rgb1 = rgb(randomNumber(256), randomNumber(256), randomNumber(256));
-  // console.log("rgb1:", rgb1);
-  return rgb1.toString(); //.hex;
-};
-
+// We might get back to using this if we build an actual UI around this, or use this to hold a _good_ sample pattern once we have one.
