@@ -9,15 +9,13 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    # https://github.com/actions/virtual-environments/issues/4#issuecomment-600025775
+    defaults:
+      run:
+        # Some of the commands below need this shell setup -- https://github.com/actions/virtual-environments/issues/4#issuecomment-600025775
+        shell: bash -l {0}
     steps:
       - uses: actions/checkout@v2
-      # Install .nvmrc node version, export NVM_BIN to PATH for further steps
       - run: nvm install && echo "$NVM_BIN" >> $GITHUB_PATH
-        shell: bash -l {0}
-      # Override npm installed above with version specified in package.json
       - run: ./npm-setup.sh
-        shell: bash -l {0}
-      # Do our actual business
       - run: npm install && npm run build
-        shell: bash -l {0}
+      - run: npm run prettier-check-all
