@@ -41,7 +41,7 @@
     "@storybook/html": "6.3.10",
     "@types/jest": "27.0.2",
     "@types/snapsvg": "0.5.1",
-    "babel-loader": "8.2.2",
+    "babel-loader": "8.2.3",
     "gts": "3.1.0",
     "husky": "7.0.2",
     "jest": "27.2.4",
