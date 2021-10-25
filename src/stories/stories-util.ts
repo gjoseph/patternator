@@ -21,7 +21,7 @@ export const rangeControl = (min: number, max?: number, step = 1) => {
  * @param drawOnSnap draws the main object of the story on the Snap paper; return an object of any type that will be fed into the debug function
  * @param drawDebug draws "debug" information about the main object returned by the previous function
  */
-export const makeStoryWithSnap = <T> (
+export const makeStoryWithSnap = <T>(
   drawOnSnap: (snap: Snap.Paper, args: Args) => T,
   drawDebug: (mainDrawing: T, snap: Snap.Paper, args: Args) => void = () => {}
 ): Story => {
