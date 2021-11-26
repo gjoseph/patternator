@@ -5,15 +5,23 @@
   separateMultipleMajor: true,
   automerge: false,
   automergeType: "pr",
-  // This is not actually supported by Renovate on github, so we need to disallow other merge types in the repo config
-  automergeStrategy: "merge-commit",
+  automergeStrategy: "merge-commit", // This is not actually supported by Renovate on GitHub, so we need to disallow other merge types in the repo config
+  platformAutomerge: true, // Let GitHub do the actual merging
   rebaseWhen: "behind-base-branch",
   // Wait 2 days after a release to create PR/branches
   stabilityDays: 2,
-  prHourlyLimit: 0,
+  prCreation: "not-pending",
+  // default is documented to be 0, but empirically it seems to be ~30 ?
   prConcurrentLimit: 0,
+  // default is documented to be 0, but empirically it seems to be 2 ?
+  prHourlyLimit: 0,
+  labels: [
+    "renovate-{{updateType}}",
+    "renovate-{{depType}}",
+    "renovate-{{datasource}}",
+  ],
   packageRules: [
-    // Auto-merge patch updates (repo still requires an approval, so we could potentially do this for all updates
+    // Auto-merge patch updates
     {
       updateTypes: ["patch"],
       automerge: true,
