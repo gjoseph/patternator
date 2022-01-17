@@ -49,7 +49,7 @@
     "pretty-quick": "3.1.3",
     "rollup": "2.63.0",
     "snapsvg-cjs": "0.0.6",
-    "ts-jest": "27.1.2",
+    "ts-jest": "27.1.3",
     "typescript": "4.5.4"
   },
   "//": "Also see .prettierignore -- https://github.com/prettier/prettier/issues/4708",
