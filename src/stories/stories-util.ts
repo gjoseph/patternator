@@ -1,6 +1,8 @@
 import { useEffect } from "@storybook/client-api";
 import { Args, Story } from "@storybook/html";
-import Snap from "snapsvg";
+import Snap, { rgb } from "snapsvg";
+import { Coords } from "../coords";
+import { randomNumber } from "../misc";
 
 export const angleControl = {
   control: { type: "range", min: 0, max: 360, step: 1 },
@@ -38,4 +40,25 @@ export const makeStoryWithSnap = <T>(
     // doesn't invoke story(), well, its useEffect is never invoked either.
     return "";
   };
+};
+
+export const circle = (snap: Snap.Paper) => (coords: Coords) => {
+  snap.circle(coords.x, coords.y, 5).attr({
+    fill: "#300",
+    stroke: "#933",
+    strokeWidth: 2,
+  });
+};
+
+export const sqr = (snap: Snap.Paper) => (coords: Coords) =>
+  snap
+    .rect(coords.x - 2, coords.y - 2, 4, 4)
+    .attr({ fill: "#444", stroke: "none" });
+
+export const randomColor = () => {
+  return rgb(
+    randomNumber(256),
+    randomNumber(256),
+    randomNumber(256)
+  ).toString();
 };
