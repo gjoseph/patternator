@@ -39,7 +39,7 @@
     "@storybook/addon-links": "6.4.19",
     "@storybook/addon-storysource": "6.4.19",
     "@storybook/html": "6.4.19",
-    "@types/jest": "27.4.0",
+    "@types/jest": "27.4.1",
     "@types/snapsvg": "0.5.1",
     "babel-loader": "8.2.3",
     "gts": "3.1.0",
