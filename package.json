@@ -40,7 +40,7 @@
     "@storybook/addon-storysource": "6.4.22",
     "@storybook/html": "6.4.22",
     "@types/jest": "27.4.1",
-    "@types/snapsvg": "0.5.1",
+    "@types/snapsvg": "0.5.2",
     "babel-loader": "8.2.5",
     "gts": "3.1.0",
     "husky": "7.0.4",
