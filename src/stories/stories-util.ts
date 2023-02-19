@@ -42,6 +42,13 @@ export const makeStoryWithSnap = <T>(
   };
 };
 
+export const dot = (snap: Snap.Paper) => (coords: Coords) => {
+  snap.circle(coords.x, coords.y, 2).attr({
+    fill: "#935",
+    stroke: "#935",
+  });
+};
+
 export const circle = (snap: Snap.Paper) => (coords: Coords) => {
   snap.circle(coords.x, coords.y, 5).attr({
     fill: "#300",

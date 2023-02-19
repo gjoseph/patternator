@@ -4,7 +4,7 @@ import { Coords } from "../coords";
 import { Patterns } from "../patterns";
 import { gridBuilder } from "../patterns/grids";
 import { Polygons } from "../shapes/regular-polygons";
-import { makeStoryWithSnap, rangeControl } from "./stories-util";
+import { dot, makeStoryWithSnap, rangeControl } from "./stories-util";
 
 export default {
   title: "Patternator/Patterns",
@@ -12,13 +12,6 @@ export default {
     drawDebugHelp: false,
   },
 } as Meta;
-
-const dot = (snap: Snap.Paper) => (coords: Coords) => {
-  snap.circle(coords.x, coords.y, 2).attr({
-    fill: "#935",
-    stroke: "#935",
-  });
-};
 
 const makeStory = (
   makePattern: (args: Args) => Patterns.Repetition,
