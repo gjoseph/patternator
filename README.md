@@ -1,8 +1,17 @@
+```
 nvm install
 ./npm-setup.sh
 npm install
-# then:
+```
+
+Then either do:
+
+```
 npm run watch
-# open index.html via intellij (over http)
-# or:
+```
+
+...and open index.html via intellij (over http), or do:
+
+```
 npm run storybook
+```
