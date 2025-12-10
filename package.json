@@ -2,7 +2,7 @@
   "name": "svg-patterns",
   "version": "0.0.1",
   "engines": {
-    "node": "18.20.8",
+    "node": "20.19.6",
     "npm": "9.9.4"
   },
   "files": [
