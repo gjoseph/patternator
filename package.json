@@ -42,7 +42,7 @@
     "@storybook/html": "6.5.16",
     "@storybook/manager-webpack5": "6.5.16",
     "@types/jest": "29.5.14",
-    "@types/snapsvg": "0.5.2",
+    "@types/snapsvg": "0.5.8",
     "babel-loader": "9.1.2",
     "gts": "3.1.1",
     "husky": "8.0.3",
