@@ -26,7 +26,7 @@
     "build-storybook": "build-storybook"
   },
   "dependencies": {
-    "eve": "0.5.4",
+    "eve": "0.51.0",
     "snapsvg": "0.5.1"
   },
   "devDependencies": {
